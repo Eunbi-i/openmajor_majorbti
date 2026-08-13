@@ -1,6 +1,5 @@
 ### 1. 파이썬 코드 (`app.py`)
 
-```python
 import streamlit as st
 
 # 페이지 기본 설정
