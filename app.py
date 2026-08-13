@@ -91,104 +91,87 @@ TYPE_INFO = {
     }
 }
 
-# 헤더 영역
-st.title("🎓 자유전공학부 전공 MBTI 테스트")
-st.caption("고등학생을 위한 맞춤형 전공 탐색 프로그램 | 내 성향에 딱 맞는 전공 트랙은?")
-st.markdown("---")
-
-# 질문 문항 및 선택지
+# 질문 문항 및 선택지 (12문항)
 questions = [
     {
-        "id": "q1",
-        "question": "1. 뉴스나 유튜브를 볼 때 더 끌리는 주제는?",
+        "question": "Q1. 뉴스나 유튜브를 볼 때 더 끌리는 주제는?",
         "options": [
             ("사회적 이슈, 사건 사고, 문화 트렌드, 사람들의 이야기", "S"),
             ("새로운 IT 기술, 우주/과학 신기술, 자연 현상의 비밀", "T")
         ]
     },
     {
-        "id": "q2",
-        "question": "2. 해결해보고 싶은 인류의 문제는?",
+        "question": "Q2. 해결해보고 싶은 인류의 문제는?",
         "options": [
             ("사회적 불평등, 국가 간 갈등, 문화적 소외 문제", "S"),
             ("기후 변화, 질병 치료제 개발, 에너지 부족 문제", "T")
         ]
     },
     {
-        "id": "q3",
-        "question": "3. 학창 시절 더 친숙하게 느껴졌던 과목은?",
+        "question": "Q3. 학창 시절 더 친숙하게 느껴졌던 과목은?",
         "options": [
             ("국어, 사회, 역사, 외국어", "S"),
             ("수학, 물리학, 화학, 지구과학, 정보", "T")
         ]
     },
     {
-        "id": "q4",
-        "question": "4. 새로운 프로젝트를 시작할 때 나의 방식은?",
+        "question": "Q4. 새로운 프로젝트를 시작할 때 나의 방식은?",
         "options": [
             ("관련 데이터와 논문, 기존 이론부터 철저히 분석한다.", "A"),
             ("일단 다양한 아이디어를 떠올리고 실질적으로 적용해 본다.", "C")
         ]
     },
     {
-        "id": "q5",
-        "question": "5. 나의 주장을 설득력 있게 만드는 핵심 요소는?",
+        "question": "Q5. 나의 주장을 설득력 있게 만드는 핵심 요소는?",
         "options": [
             ("수치화된 통계 자료와 체계적 논리", "A"),
             ("현실적인 적용 가능성과 직관적인 아이디어", "C")
         ]
     },
     {
-        "id": "q6",
-        "question": "6. 시험을 준비할 때 나의 공부 스타일은?",
+        "question": "Q6. 시험을 준비할 때 나의 공부 스타일은?",
         "options": [
             ("전체적인 개념의 체계와 원리를 원론적으로 이해한다.", "A"),
             ("기출문제를 풀며 문제 유형을 익히고 실전에 바로 적용한다.", "C")
         ]
     },
     {
-        "id": "q7",
-        "question": "7. 공부를 통해 얻고자 하는 목적은?",
+        "question": "Q7. 공부를 통해 얻고자 하는 목적은?",
         "options": [
             ("거시적인 시스템, 조직, 사회적 구조를 관리하고 운영하는 것", "M"),
             ("세상이나 생명체, 인간의 근본적인 원리를 밝혀내는 깊이 있는 탐구", "R")
         ]
     },
     {
-        "id": "q8",
-        "question": "8. 팀 프로젝트를 할 때 내가 더 잘할 수 있는 역할은?",
+        "question": "Q8. 팀 프로젝트를 할 때 내가 더 잘할 수 있는 역할은?",
         "options": [
             ("전체 일정과 시스템을 조정하고 종합하는 총괄 관리자", "M"),
             ("한 주제를 맡아 깊이 있게 자료를 수집하고 분석하는 전문 탐구자", "R")
         ]
     },
     {
-        "id": "q9",
-        "question": "9. 더 흥미를 느끼는 연구 대상은?",
+        "question": "Q9. 더 흥미를 느끼는 연구 대상은?",
         "options": [
             ("기업, 국가, 법, 기술 시스템 등 사회적으로 구축된 구조", "M"),
             ("자연, 인간의 마음, 언어, 유전자 등 근본적으로 존재하는 대상", "R")
         ]
     },
     {
-        "id": "q10",
-        "question": "10. 미래에 활약하고 싶은 무대는?",
+        "question": "Q10. 미래에 활약하고 싶은 무대는?",
         "options": [
             ("글로벌 시장이나 공공기관 등 넓은 범주에 영향을 미치는 곳", "G"),
             ("특수 기술이나 특정 산업 분야에서 독보적인 영역을 구축하는 곳", "L")
         ]
     },
     {
-        "id": "q11",
-        "question": "11. 내가 선택할 강의의 범위는?",
+        "question": "Q11. 내가 선택할 강의의 범위는?",
         "options": [
             ("인문, 사회, 경제 등 폭넓은 시야와 통찰을 주는 과목", "G"),
             ("특정 기계, 바이오, 화학 등 뾰족한 기술을 배우는 과목", "L")
         ]
     },
     {
-        "id": "q12",
-        "question": "12. 더 가치 있게 여겨지는 것은?",
+        "question": "Q12. 더 가치 있게 여겨지는 것은?",
         "options": [
             ("다양성, 공공의 이익, 글로벌 감각", "G"),
             ("전문성, 기술적 완성도, 실용적 활용성", "L")
@@ -196,48 +179,136 @@ questions = [
     }
 ]
 
-# 폼(Form) 형태로 질문 제출받기
-with st.form("mbti_form"):
-    answers = {}
-    for q in questions:
-        answers[q["id"]] = st.radio(
-            q["question"],
-            options=[opt[0] for opt in q["options"]],
-            key=q["id"]
-        )
-        st.write("")
+# 세션 상태 초기화 (페이지 이동 및 답변 저장용)
+if "step" not in st.session_state:
+    st.session_state.step = 0
+if "answers" not in st.session_state:
+    st.session_state.answers = {}
 
-    submitted = st.form_submit_button("🔥 내 전공 MBTI 결과 보기")
+# 앱 헤더
+st.title("🎓 자유전공학부 전공 MBTI 테스트")
+st.caption("고등학생을 위한 맞춤형 전공 탐색 프로그램 | 단계별 테스트")
+st.markdown("---")
 
-# 결과 계산 및 출력
-if submitted:
+total_q = len(questions)
+
+# ------------------------------------
+# 1. 질문 진행 화면 (step < total_q)
+# ------------------------------------
+if st.session_state.step < total_q:
+    current_idx = st.session_state.step
+    q_data = questions[current_idx]
+    
+    # 진행률 표시
+    progress = (current_idx + 1) / total_q
+    st.progress(progress)
+    st.write(f"**질문 {current_idx + 1} / {total_q}**")
+    
+    st.subheader(q_data["question"])
+    
+    # 기본 선택 항목 복원 (이전 버튼 눌렀을 때)
+    default_choice = st.session_state.answers.get(current_idx, 0)
+    
+    choice = st.radio(
+        "선택지를 골라주세요:",
+        options=[opt[0] for opt in q_data["options"]],
+        index=default_choice,
+        key=f"q_{current_idx}"
+    )
+    
+    st.write("")
+    col1, col2 = st.columns([1, 1])
+    
+    # 이전 버튼
+    with col1:
+        if current_idx > 0:
+            if st.button("⬅️ 이전 질문"):
+                # 현재 선택 저장
+                selected_code = q_data["options"][[opt[0] for opt in q_data["options"]].index(choice)][1]
+                selected_idx = [opt[0] for opt in q_data["options"]].index(choice)
+                st.session_state.answers[current_idx] = selected_idx
+                
+                st.session_state.step -= 1
+                st.rerun()
+
+    # 다음/결과보기 버튼
+    with col2:
+        btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
+        if st.button(btn_label):
+            selected_idx = [opt[0] for opt in q_data["options"]].index(choice)
+            st.session_state.answers[current_idx] = selected_idx
+            st.session_state.step += 1
+            st.rerun()
+
+# ------------------------------------
+# 2. 결과 출력 화면 (step == total_q)
+# ------------------------------------
+else:
+    # 점수 집계
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
     
-    for q in questions:
-        user_ans = answers[q["id"]]
-        for text, code in q["options"]:
-            if user_ans == text:
-                scores[code] += 1
+    for i, ans_idx in st.session_state.answers.items():
+        code = questions[i]["options"][ans_idx][1]
+        scores[code] += 1
 
-    # 유형 결합 (순서 정확히 지정: 1차 S/T, 2차 A/C, 3차 M/R, 4차 G/L)
+    # 퍼센트 계산 (각 축 당 3문항)
+    pct_S = round((scores["S"] / 3) * 100)
+    pct_T = 100 - pct_S
+    
+    pct_A = round((scores["A"] / 3) * 100)
+    pct_C = 100 - pct_A
+    
+    pct_M = round((scores["M"] / 3) * 100)
+    pct_R = 100 - pct_M
+    
+    pct_G = round((scores["G"] / 3) * 100)
+    pct_L = 100 - pct_G
+
+    # 최종 MBTI 조합
     mbti = ""
     mbti += "S" if scores["S"] >= scores["T"] else "T"
     mbti += "A" if scores["A"] >= scores["C"] else "C"
     mbti += "M" if scores["M"] >= scores["R"] else "R"
     mbti += "G" if scores["G"] >= scores["L"] else "L"
 
-    # 예외 방지: 만약 결과가 키에 없으면 기본값 설정
     result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
 
-    # 결과 화면 렌더링
-    st.markdown("---")
     st.balloons()
     
-    st.subheader("🎯 당신의 전공 MBTI 유형은?")
-    st.title(f"✨ {mbti} - {result_data['title']}")
+    st.markdown("### 🎯 당신의 성격 유형은:")
+    st.title(f"✨ {result_data['title']} ({mbti})")
     
     st.info(result_data["desc"])
 
+    st.markdown("---")
+    st.subheader("📊 4개 영역별 성향 지표")
+    st.caption("선택하신 답변을 바탕으로 한 영역별 비율입니다.")
+
+    # 1. S vs T
+    col_a, col_b = st.columns([1, 1])
+    col_a.write(f"**사회/인간 (S)**: {pct_S}%")
+    col_b.write(f"**기술/자연 (T)**: {pct_T}%")
+    st.progress(pct_S / 100)
+
+    # 2. A vs C
+    col_a, col_b = st.columns([1, 1])
+    col_a.write(f"**분석/논리 (A)**: {pct_A}%")
+    col_b.write(f"**창의/응용 (C)**: {pct_C}%")
+    st.progress(pct_A / 100)
+
+    # 3. M vs R
+    col_a, col_b = st.columns([1, 1])
+    col_a.write(f"**경영/시스템 (M)**: {pct_M}%")
+    col_b.write(f"**연구/자연 (R)**: {pct_R}%")
+    st.progress(pct_M / 100)
+
+    # 4. G vs L
+    col_a, col_b = st.columns([1, 1])
+    col_a.write(f"**글로벌/공공 (G)**: {pct_G}%")
+    col_b.write(f"**전문/기술 (L)**: {pct_L}%")
+    st.progress(pct_G / 100)
+
+    st.markdown("---")
     st.markdown("### 📚 추천 전공 트랙 (자유전공 진학 시 선택 가능 학과)")
     for dept in result_data["depts"]:
         st.markdown(f"- **{dept}**")
@@ -248,3 +319,9 @@ if submitted:
     자유전공학부에 입학하면 **1학년 동안 이 학과들의 수업을 직접 들어보고**
     나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
     """)
+
+    # 다시 하기 버튼
+    if st.button("🔄 테스트 다시 하기"):
+        st.session_state.step = 0
+        st.session_state.answers = {}
+        st.rerun()
