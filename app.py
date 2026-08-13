@@ -1,5 +1,3 @@
-### 1. 파이썬 코드 (`app.py`)
-
 import streamlit as st
 
 # 페이지 기본 설정
@@ -207,13 +205,12 @@ with st.form("mbti_form"):
             options=[opt[0] for opt in q["options"]],
             key=q["id"]
         )
-        st.write("") # 간격 조절
+        st.write("")
 
     submitted = st.form_submit_button("🔥 내 전공 MBTI 결과 보기")
 
 # 결과 계산 및 출력
 if submitted:
-    # 점수 집계
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
     
     for q in questions:
@@ -222,18 +219,19 @@ if submitted:
             if user_ans == text:
                 scores[code] += 1
 
-    # 유형 결정
+    # 유형 결합 (순서 정확히 지정: 1차 S/T, 2차 A/C, 3차 M/R, 4차 G/L)
     mbti = ""
     mbti += "S" if scores["S"] >= scores["T"] else "T"
     mbti += "A" if scores["A"] >= scores["C"] else "C"
     mbti += "M" if scores["M"] >= scores["R"] else "R"
     mbti += "G" if scores["G"] >= scores["L"] else "L"
 
-    result_data = TYPE_INFO[mbti]
+    # 예외 방지: 만약 결과가 키에 없으면 기본값 설정
+    result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
 
     # 결과 화면 렌더링
     st.markdown("---")
-    st.balloons() # 축하 애니메이션 효과
+    st.balloons()
     
     st.subheader("🎯 당신의 전공 MBTI 유형은?")
     st.title(f"✨ {mbti} - {result_data['title']}")
@@ -244,7 +242,6 @@ if submitted:
     for dept in result_data["depts"]:
         st.markdown(f"- **{dept}**")
 
-    # 자유전공 홍보용 안내 문구
     st.success("""
     💡 **자유전공학부의 특별함!**
     지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?
