@@ -12,24 +12,56 @@ st.set_page_config(
 # 🎨 디자인 커스텀 CSS
 st.markdown("""
 <style>
-    /* 메인 제목 크기 축소 */
+    /* 상단 헤더 스타일 */
+    .header-sub1 {
+        font-size: 14px !important;
+        color: #a0a0a0 !important;
+        margin-bottom: 4px !important;
+    }
     .custom-title {
         font-size: 28px !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
+        margin-top: 4px !important;
         margin-bottom: 4px !important;
-        line-height: 1.3 !important;
+        line-height: 1.2 !important;
+    }
+    .header-sub2 {
+        font-size: 14px !important;
+        color: #808080 !important;
+        margin-bottom: 16px !important;
     }
     
-    /* 결과 제목 크기 축소 (약 24px) */
+    /* 결과 제목 스타일 */
     .result-title {
-        font-size: 24px !important;
+        font-size: 22px !important;
         font-weight: 700 !important;
         margin-top: 8px !important;
         margin-bottom: 16px !important;
     }
 
-    /* 성향 지표 오른쪽 정렬 클래스 */
-    .text-right {
+    /* 이미지 중앙 정렬 전용 컨테이너 */
+    .center-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 16px 0;
+    }
+
+    /* 모바일 대응 성향 지표 Flexbox */
+    .indicator-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-size: 15px;
+        margin-bottom: 4px;
+    }
+    .indicator-left {
+        font-weight: bold;
+        text-align: left;
+    }
+    .indicator-right {
+        font-weight: bold;
         text-align: right;
     }
 </style>
@@ -293,10 +325,10 @@ if "step" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 
-# 헤더 정보
-st.markdown('<div class="custom-title">🎓 전공탐색 MBTI</div>', unsafe_allow_html=True)
-st.caption("제주대학교 전공체험의 날 글로벌자율학부 자유전공 체험")
-st.caption("개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항")
+# 📌 요청사항 1: 헤더 타이틀 구성 순서 수정
+st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
+st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
+st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
 st.markdown("---")
 
 total_q = len(questions)
@@ -375,25 +407,24 @@ else:
 
     st.balloons()
     
-    # 📌 요청사항 2: 문구 수정 ("당신의 전공 유형은:")
     st.markdown("### 🎯 당신의 전공 유형은:")
-    
-    # 📌 요청사항 1: 글씨 크기 축소 (custom-title CSS 클래스 적용)
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
-    # 📌 요청사항 4: 이미지 크기 축소 (width=300 지정)
+    # 📌 요청사항 2: 사진 중앙 정렬 (HTML Flexbox 사용)
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_found = False
 
-    for name in possible_names:
-        if os.path.exists(name):
-            st.image(name, width=300)
-            img_found = True
-            break
-        elif os.path.exists(f"images/{name}"):
-            st.image(f"images/{name}", width=300)
-            img_found = True
-            break
+    col_l, col_m, col_r = st.columns([1, 2, 1])
+    with col_m:
+        for name in possible_names:
+            if os.path.exists(name):
+                st.image(name, use_container_width=True)
+                img_found = True
+                break
+            elif os.path.exists(f"images/{name}"):
+                st.image(f"images/{name}", use_container_width=True)
+                img_found = True
+                break
 
     if not img_found:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
@@ -404,40 +435,51 @@ else:
     st.subheader("📊 4개 영역별 성향 지표")
     st.caption("선택하신 답변을 바탕으로 한 영역별 비율입니다.")
 
-    # 📌 요청사항 3: 영역 지표 양쪽 정렬 (왼쪽 text-left / 오른쪽 text-right)
-    col_a, col_b = st.columns([1, 1])
-    col_a.markdown(f"**사회/인간 (S)**: {pct_S}%")
-    col_b.markdown(f'<div class="text-right">**기술/자연 (T)**: {pct_T}%</div>', unsafe_allow_html=True)
-    st.progress(pct_S / 100)
+    # 📌 요청사항 3: 모바일 완벽 대응 양쪽 정렬 (Pure HTML Flexbox)
+    def render_indicator(left_text, left_pct, right_text, right_pct):
+        st.markdown(f"""
+        <div class="indicator-row">
+            <span class="indicator-left">{left_text}: {left_pct}%</span>
+            <span class="indicator-right">{right_text}: {right_pct}%</span>
+        </div>
+        """, unsafe_allow_html=True)
+        st.progress(left_pct / 100)
 
-    col_a, col_b = st.columns([1, 1])
-    col_a.markdown(f"**분석/논리 (A)**: {pct_A}%")
-    col_b.markdown(f'<div class="text-right">**창의/응용 (C)**: {pct_C}%</div>', unsafe_allow_html=True)
-    st.progress(pct_A / 100)
-
-    col_a, col_b = st.columns([1, 1])
-    col_a.markdown(f"**경영/시스템 (M)**: {pct_M}%")
-    col_b.markdown(f'<div class="text-right">**연구/자연 (R)**: {pct_R}%</div>', unsafe_allow_html=True)
-    st.progress(pct_M / 100)
-
-    col_a, col_b = st.columns([1, 1])
-    col_a.markdown(f"**글로벌/공공 (G)**: {pct_G}%")
-    col_b.markdown(f'<div class="text-right">**전문/기술 (L)**: {pct_L}%</div>', unsafe_allow_html=True)
-    st.progress(pct_G / 100)
+    render_indicator("사회/인간 (S)", pct_S, "기술/자연 (T)", pct_T)
+    render_indicator("분석/논리 (A)", pct_A, "창의/응용 (C)", pct_C)
+    render_indicator("경영/시스템 (M)", pct_M, "연구/자연 (R)", pct_R)
+    render_indicator("글로벌/공공 (G)", pct_G, "전문/기술 (L)", pct_L)
 
     st.markdown("---")
     st.markdown("### 📚 추천 전공 트랙 (제주대학교 자유전공 진입 가능 학과)")
     for dept in result_data["depts"]:
         st.markdown(f"- **{dept}**")
 
+    # 📌 요청사항 4: 문구 수정 (글로벌자율학부(자유전공) 반영)
     st.success("""
-    💡 **자유전공학부의 특별함!**
-    지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?
-    자유전공학부에 입학하면 **1학년 동안 이 학과들의 수업을 들어보고**
+    💡 **글로벌자율학부(자유전공)의 특별함!**  
+    지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?  
+    **글로벌자율학부(자유전공)**에 입학하면 **1학년 동안 이 학과들의 수업을 들어보고**  
     나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
     """)
 
+    # 📌 요청사항 5: 참고용 안내 문구 추가
+    st.caption("⚠️ **본 테스트는 전공 탐색을 위한 참고용으로만 활용해 주시기 바랍니다.**")
+
+    st.write("")
     if st.button("🔄 테스트 다시 하기", use_container_width=True):
         st.session_state.step = 0
         st.session_state.answers = {}
         st.rerun()
+
+    # 📌 요청사항 6: 하단 관련 링크 모음 추가
+    st.markdown("---")
+    st.markdown("### 🔗 제주대학교 관련 링크")
+    
+    col_link1, col_link2 = st.columns(2)
+    with col_link1:
+        st.link_button("📸 2026 자유전공 인스타그램", "https://www.instagram.com/", use_container_width=True)
+        st.link_button("🏫 글로벌자율학부 홈페이지", "https://www.jejunu.ac.kr/", use_container_width=True)
+    with col_link2:
+        st.link_button("🎓 제주대학교 입학처", "https://ibhak.jejunu.ac.kr/", use_container_width=True)
+        st.link_button("🏛️ 제주대학교 단과대학 안내", "https://www.jejunu.ac.kr/college/info", use_container_width=True)
