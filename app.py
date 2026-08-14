@@ -14,9 +14,9 @@ st.markdown("""
 <style>
     /* 메인 제목 크기 축소 */
     .custom-title {
-        font-size: 28px !important;
+        font-size: 33px !important;
         font-weight: 700 !important;
-        margin-bottom: 4px !important;
+        margin-bottom: 6px !important;
         line-height: 1.3 !important;
     }
     
