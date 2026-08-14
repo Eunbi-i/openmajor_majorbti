@@ -104,18 +104,40 @@ st.markdown("""
         text-align: right;
     }
 
-    /* 💡 [핵심 수정] 스마트폰(모바일)에서도 강제로 가로 1줄(50%씩) 유지하는 CSS */
+    /* 💡 [수정] 모바일 1줄 유지 레이아웃 */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         gap: 8px !important;
         width: 100% !important;
+        justify-content: space-between !important;
     }
+    
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         width: 50% !important;
         min-width: 50% !important;
         flex: 1 1 50% !important;
+        display: flex !important;
+    }
+
+    /* 왼쪽 컬럼(이전 버튼) 정렬 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+        justify-content: flex-start !important;
+    }
+    /* 오른쪽 컬럼(다음 버튼) 정렬 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+        justify-content: flex-end !important;
+    }
+
+    /* 💡 [핵심 추가] 이전/다음 버튼 사각형 가로 길이 줄이기 (최대 140px 제한 및 여백 조정) */
+    div[data-testid="stHorizontalBlock"] button {
+        max-width: 140px !important;
+        width: auto !important;
+        min-width: 110px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        font-size: 14px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -286,7 +308,7 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    # 💡 이전/다음 버튼 50% 분할
+    # 💡 하단 버튼 2개
     col1, col2 = st.columns(2)
     
     with col1:
