@@ -1,6 +1,7 @@
 import os
 import glob
 import re
+import base64
 import streamlit as st
 
 # 페이지 기본 설정
@@ -66,7 +67,8 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin: 12px 0;
+        margin: 16px 0;
+        width: 100%;
     }
     .img-center-container img {
         width: 150px !important;
@@ -460,11 +462,22 @@ else:
             img_path = f"images/{name}"
             break
 
-    # 📌 4. 150px x 150px 크기로 이미지 가운데 정렬 출력
+    # 📌 4. 150px x 150px 크기로 이미지 완벽 중앙 정렬 출력 (base64 방식 활용)
     if img_path:
-        col_l, col_m, col_r = st.columns([2, 1, 2])
-        with col_m:
-            st.image(img_path, width=200)
+        with open(img_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+            
+        ext = img_path.split('.')[-1].lower()
+        mime_type = "image/png" if ext == "png" else "image/jpeg"
+        
+        st.markdown(
+            f'''
+            <div class="img-center-container">
+                <img src="data:{mime_type};base64,{encoded_string}" alt="{mbti}">
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
