@@ -462,7 +462,7 @@ else:
 
     # 📌 4. 150px x 150px 크기로 이미지 가운데 정렬 출력
     if img_path:
-        col_l, col_m, col_r = st.columns([1, 1, 1])
+        col_l, col_m, col_r = st.columns([2, 1, 2])
         with col_m:
             st.image(img_path, width=200)
     else:
