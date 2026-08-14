@@ -32,12 +32,33 @@ st.markdown("""
         margin-bottom: 16px !important;
     }
     
-    /* 결과 제목 스타일 */
+    /* 결과 상단 소제목 (당신의 전공 유형은) -> 18px (2pt 축소) */
+    .result-sub {
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        color: #333333;
+        margin-bottom: 4px !important;
+    }
+
+    /* 결과 제목 스타일 (유형 이름) -> 24px (2pt 확대) */
     .result-title {
-        font-size: 22px !important;
-        font-weight: 700 !important;
-        margin-top: 8px !important;
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        margin-top: 4px !important;
         margin-bottom: 16px !important;
+        color: #1E3A8A;
+    }
+
+    /* 유형 설명글 스타일 -> 13px (1pt 축소) */
+    .result-desc-box {
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+        background-color: #F0F9FF;
+        border-left: 4px solid #0284C7;
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        color: #0C4A6E;
     }
 
     /* 모바일 대응 성향 지표 Flexbox */
@@ -406,10 +427,16 @@ else:
 
     st.balloons()
     
-    st.markdown("### 🎯 당신의 전공 유형은:")
+    # 📌 1. '당신의 전공 유형은:' (2pt 작게)
+    st.markdown('<div class="result-sub">🎯 당신의 전공 유형은:</div>', unsafe_allow_html=True)
+    
+    # 📌 2. 유형 이름 (2pt 크게)
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
-    # 📌 사진 찾기
+    # 📌 3. 유형 설명글 (1pt 작게)
+    st.markdown(f'<div class="result-desc-box">{result_data["desc"]}</div>', unsafe_allow_html=True)
+    
+    # 📌 사진 찾기 및 크기 50% 축소 처리 후 가운데 정렬
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_path = None
     for name in possible_names:
@@ -420,15 +447,14 @@ else:
             img_path = f"images/{name}"
             break
 
-    # 📌 단 1개의 이미지 가운데 출력
+    # 📌 4. 사진 크기 약 50% 축소 및 완벽 가운데 정렬
     if img_path:
-        col_l, col_m, col_r = st.columns([1, 2, 1])
+        # 좌우 여백 비율을 넓혀서 중앙 이미지를 아담하게 줄임
+        col_l, col_m, col_r = st.columns([1.5, 1, 1.5])
         with col_m:
             st.image(img_path, use_container_width=True)
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
-
-    st.info(result_data["desc"])
 
     # 📌 단과대학명 제거 후 pure 학과명만 출력
     clean_depts = [re.sub(r'^(사회과학대학|경상대학|인문대학|자연과학대학|해양과학대학|공과대학|생명자원과학대학)\s*', '', dept) for dept in result_data["depts"]]
@@ -483,3 +509,4 @@ else:
         st.link_button("🏫 제주대학교 자유전공 홈페이지", "https://openmajor.jejunu.ac.kr/free/index.htm", use_container_width=True)
     with col_link2:
         st.link_button("🎓 제주대학교 입학처", "https://ibsi.jejunu.ac.kr/main", use_container_width=True)
+        st.link_button("🏛️ 제주대학교 단과대학 안내", "https://www.jejunu.ac.kr/college/info", use_container_width=True)
