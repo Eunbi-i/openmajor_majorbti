@@ -4,10 +4,31 @@ import streamlit as st
 
 # 페이지 기본 설정
 st.set_page_config(
-    page_title="제주대학교 자유전공학부 전공 MBTI 테스트",
+    page_title="전공탐색 MBTI",
     page_icon="🎓",
     layout="centered"
 )
+
+# 🎨 버튼 위치 고정 및 글자 크기 조절을 위한 커스텀 CSS
+st.markdown("""
+<style>
+    /* 메인 제목 크기 축소 (기존 약 30pt -> 약 21pt로 조정) */
+    .custom-title {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* 질문 내용 영역 고정 높이 (질문/선택지 길이가 달라져도 버튼 위치 고정) */
+    .question-container {
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # 16가지 유형 매핑 데이터
 TYPE_INFO = {
@@ -267,9 +288,10 @@ if "step" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 
-# 앱 헤더
-st.title("🎓 제주대학교 자유전공학부 전공 MBTI 테스트")
-st.caption("고등학생을 위한 맞춤형 전공 탐색 프로그램 | 총 20문항")
+# 📌 요청하신 헤더 변경 사항 적용
+st.markdown('<div class="custom-title">🎓 전공탐색 MBTI</div>', unsafe_allow_html=True)
+st.caption("개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항")
+st.caption("제주대학교 전공체험의 날 글로벌자율학부 자유전공 체험")
 st.markdown("---")
 
 total_q = len(questions)
@@ -285,6 +307,8 @@ if st.session_state.step < total_q:
     st.progress(progress)
     st.write(f"**질문 {current_idx + 1} / {total_q}**")
     
+    # 📌 고정 높이 컨테이너로 질문/선택지 영역을 감싸 버튼 위치 유지
+    st.markdown('<div class="question-container">', unsafe_allow_html=True)
     st.subheader(q_data["question"])
     
     default_choice = st.session_state.answers.get(current_idx, 0)
@@ -295,13 +319,16 @@ if st.session_state.step < total_q:
         index=default_choice,
         key=f"q_{current_idx}"
     )
+    st.markdown('</div>', unsafe_allow_html=True)
     
     st.write("")
+    
+    # 📌 하단 고정 위치 버튼 세팅 (양쪽 끝 배치)
     col1, col2 = st.columns([1, 1])
     
     with col1:
         if current_idx > 0:
-            if st.button("⬅️ 이전 질문"):
+            if st.button("⬅️ 이전 질문", use_container_width=True):
                 selected_idx = [opt[0] for opt in q_data["options"]].index(choice)
                 st.session_state.answers[current_idx] = selected_idx
                 st.session_state.step -= 1
@@ -309,7 +336,7 @@ if st.session_state.step < total_q:
 
     with col2:
         btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
-        if st.button(btn_label):
+        if st.button(btn_label, use_container_width=True):
             selected_idx = [opt[0] for opt in q_data["options"]].index(choice)
             st.session_state.answers[current_idx] = selected_idx
             st.session_state.step += 1
@@ -350,17 +377,15 @@ else:
     st.markdown("### 🎯 당신의 성격 유형은:")
     st.title(f"✨ {result_data['title']} ({mbti})")
     
-    # 🖼️ [현재 위치에서 바로 이미지를 찾는 로직 (images 폴더 없이도 인식 가능!)]
+    # 🖼️ 이미지 자동 검색 로직
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_found = False
 
     for name in possible_names:
-        # 1. 루트(메인) 위치에서 검색
         if os.path.exists(name):
             st.image(name, use_container_width=True)
             img_found = True
             break
-        # 2. images 폴더 안에서 검색
         elif os.path.exists(f"images/{name}"):
             st.image(f"images/{name}", use_container_width=True)
             img_found = True
@@ -407,7 +432,7 @@ else:
     나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
     """)
 
-    if st.button("🔄 테스트 다시 하기"):
+    if st.button("🔄 테스트 다시 하기", use_container_width=True):
         st.session_state.step = 0
         st.session_state.answers = {}
         st.rerun()
