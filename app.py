@@ -9,23 +9,44 @@ st.set_page_config(
     layout="centered"
 )
 
-# 🎨 버튼 위치 고정 및 글자 크기 조절을 위한 커스텀 CSS
+# 🎨 디자인 커스텀 CSS
 st.markdown("""
 <style>
-    /* 메인 제목 크기 축소 (기존 약 30pt -> 약 21pt로 조정) */
+    /* 메인 제목 크기 축소 */
     .custom-title {
         font-size: 28px !important;
         font-weight: 700 !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 4px !important;
         line-height: 1.3 !important;
     }
     
-    /* 질문 내용 영역 고정 높이 (질문/선택지 길이가 달라져도 버튼 위치 고정) */
-    .question-container {
-        min-height: 200px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
+    /* 선택지 사각형 카드 버튼 스타일 */
+    div.stButton > button.option-btn {
+        width: 100%;
+        text-align: left;
+        padding: 16px 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #3e424a;
+        background-color: #1e2229;
+        color: #e0e0e0;
+        margin-bottom: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    /* 선택된 선택지 사각형 카드 스타일 (더 진하고 명확한 색상) */
+    div.stButton > button.option-btn-selected {
+        width: 100%;
+        text-align: left;
+        padding: 16px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 10px;
+        border: 2px solid #4f46e5;
+        background-color: #312e81;
+        color: #ffffff;
+        margin-bottom: 8px;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -288,10 +309,10 @@ if "step" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 
-# 📌 요청하신 헤더 변경 사항 적용
+# 📌 요구사항: 부제목 순서 변경 및 타이틀 세팅
 st.markdown('<div class="custom-title">🎓 전공탐색 MBTI</div>', unsafe_allow_html=True)
-st.caption("개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항")
 st.caption("제주대학교 전공체험의 날 글로벌자율학부 자유전공 체험")
+st.caption("개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항")
 st.markdown("---")
 
 total_q = len(questions)
@@ -307,38 +328,40 @@ if st.session_state.step < total_q:
     st.progress(progress)
     st.write(f"**질문 {current_idx + 1} / {total_q}**")
     
-    # 📌 고정 높이 컨테이너로 질문/선택지 영역을 감싸 버튼 위치 유지
-    st.markdown('<div class="question-container">', unsafe_allow_html=True)
+    # 📌 여백 제거 및 질문 제목
     st.subheader(q_data["question"])
+    st.write("선택지를 골라주세요:")
     
-    default_choice = st.session_state.answers.get(current_idx, 0)
+    # 현재 저장된 선택지 값 확인 (기본값: 0번째 선택지)
+    selected_option = st.session_state.answers.get(current_idx, 0)
     
-    choice = st.radio(
-        "선택지를 골라주세요:",
-        options=[opt[0] for opt in q_data["options"]],
-        index=default_choice,
-        key=f"q_{current_idx}"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+    # 📌 사각형 박스 형태의 선택지 구현
+    for idx, (opt_text, code) in enumerate(q_data["options"]):
+        is_selected = (selected_option == idx)
+        prefix = "🔘 " if is_selected else "⚪ "
+        btn_text = f"{prefix}{opt_text}"
+        
+        # 선택 여부에 따른 스타일 분기
+        btn_type = "primary" if is_selected else "secondary"
+        
+        if st.button(btn_text, key=f"opt_{current_idx}_{idx}", use_container_width=True, type=btn_type):
+            st.session_state.answers[current_idx] = idx
+            st.rerun()
+
     st.write("")
     
-    # 📌 하단 고정 위치 버튼 세팅 (양쪽 끝 배치)
+    # 📌 이전 / 다음 질문 버튼
     col1, col2 = st.columns([1, 1])
     
     with col1:
         if current_idx > 0:
             if st.button("⬅️ 이전 질문", use_container_width=True):
-                selected_idx = [opt[0] for opt in q_data["options"]].index(choice)
-                st.session_state.answers[current_idx] = selected_idx
                 st.session_state.step -= 1
                 st.rerun()
 
     with col2:
         btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
         if st.button(btn_label, use_container_width=True):
-            selected_idx = [opt[0] for opt in q_data["options"]].index(choice)
-            st.session_state.answers[current_idx] = selected_idx
             st.session_state.step += 1
             st.rerun()
 
