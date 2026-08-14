@@ -7,103 +7,103 @@ st.set_page_config(
     layout="centered"
 )
 
-# 올바른 16가지 유형 매핑 데이터
+# 16가지 유형 매핑 데이터 (이미지 경로 "image" 항목 추가)
 TYPE_INFO = {
-    # 1. SAMG
     "SAMG": {
         "title": "글로벌 리더형",
         "desc": "사회적 현상을 논리적으로 분석하며, 정책·공공 분야 및 국제 관계를 다루는 데 강점이 있습니다.",
-        "depts": ["정치외교학과", "행정학과", "무역학과"]
+        "depts": ["정치외교학과", "행정학과", "무역학과"],
+        "image": "images/SAMG.png"
     },
-    # 2. SAML
     "SAML": {
         "title": "비즈니스 데이터 전략가",
         "desc": "시장과 기업의 데이터를 분석하고 조직의 시스템 및 수치를 효율적으로 관리합니다.",
-        "depts": ["경영학과", "회계학과", "경영정보학과"]
+        "depts": ["경영학과", "회계학과", "경영정보학과"],
+        "image": "images/SAML.png"
     },
-    # 3. SARG
     "SARG": {
         "title": "인문학적 사색가",
         "desc": "인간과 사회의 근본적인 사상, 언어, 역사를 논리적·학술적으로 깊이 탐구합니다.",
-        "depts": ["국어국문학과", "사학과", "철학과"]
+        "depts": ["국어국문학과", "사학과", "철학과"],
+        "image": "images/SARG.png"
     },
-    # 4. SARL
     "SARL": {
         "title": "글로벌 언어·문화 전문가",
         "desc": "세계 여러 나라의 언어와 문학을 체계적으로 연구하고 글로벌 감각을 키웁니다.",
-        "depts": ["영어영문학과", "독어독문학과", "일어일문학과", "중어중문학과"]
+        "depts": ["영어영문학과", "독어독문학과", "일어일문학과", "중어중문학과"],
+        "image": "images/SARL.png"
     },
-    # 5. SCMG
     "SCMG": {
         "title": "미디어 트렌드 세터",
         "desc": "사회 트렌드와 대중 문화를 재빨리 캐치하여 콘텐츠, 미디어, 관광 상품을 기획합니다.",
-        "depts": ["언론홍보학과", "관광경영학과", "관광개발학과"]
+        "depts": ["언론홍보학과", "관광경영학과", "관광개발학과"],
+        "image": "images/SCMG.png"
     },
-    # 6. SCML
     "SCML": {
         "title": "인간 중심 서비스 전문가",
         "desc": "사람들의 삶의 질, 사회적 환경, 라이프스타일을 섬세하게 케어하고 창의적으로 표현합니다.",
-        "depts": ["사회학과", "생활환경복지학과", "패션의류학과"]
+        "depts": ["사회학과", "생활환경복지학과", "패션의류학과"],
+        "image": "images/SCML.png"
     },
-    # 7. SCRG
     "SCRG": {
         "title": "공공 경제 전문가",
         "desc": "국가와 시장 전체의 경제 흐름을 독창적으로 분석하고 사회적 자원의 배분을 연구합니다.",
-        "depts": ["경제학과"]
+        "depts": ["경제학과"],
+        "image": "images/SCRG.png"
     },
-    # 8. SCRL
     "SCRL": {
         "title": "해양 공공 안전 기획자",
         "desc": "바다라는 특수 환경에서 공공의 안전, 법률, 해양 행정 업무를 창의적·실용적으로 수행합니다.",
-        "depts": ["해양산업경찰학과"]
+        "depts": ["해양산업경찰학과"],
+        "image": "images/SCRL.png"
     },
-    # 9. TAMG
     "TAMG": {
         "title": "미래 첨단 ICT 엔지니어",
         "desc": "IT 시스템, 소프트웨어, 통신 및 전자 기술을 바탕으로 디지털 미래를 설계합니다.",
-        "depts": ["컴퓨터공학과", "통신공학과", "전자공학과"]
+        "depts": ["컴퓨터공학과", "통신공학과", "전자공학과"],
+        "image": "images/TAMG.png"
     },
-    # 10. TAML
     "TAML": {
         "title": "스마트 에너지·메카 닥터",
         "desc": "기계, 전기, 원자력, 에너지 시스템 등 산업의 핵심 파워를 구축하고 제어합니다.",
-        "depts": ["전기공학과", "기계시스템공학과", "원자력공학과", "화공그린에너지학과"]
+        "depts": ["전기공학과", "기계시스템공학과", "원자력공학과", "화공그린에너지학과"],
+        "image": "images/TAML.png"
     },
-    # 11. TARG
     "TARG": {
         "title": "기초 수리·물리 탐구자",
         "desc": "우주와 자연계의 근본 법칙을 수학적 논리와 수식으로 파헤치는 수리적 탐구자입니다.",
-        "depts": ["수학과", "물리학과"]
+        "depts": ["수학과", "물리학과"],
+        "image": "images/TARG.png"
     },
-    # 12. TARL
     "TARL": {
         "title": "생명 바이오 연구원",
         "desc": "동식물, 미생물, 유전자 등 모든 생명 현상의 비밀을 밝히고 바이오 기술을 다룹니다.",
-        "depts": ["생물학과", "식물자원환경전공", "원예과학전공", "바이오소재전공", "분자생명공학전공", "동물생명공학전공"]
+        "depts": ["생물학과", "식물자원환경전공", "원예과학전공", "바이오소재전공", "분자생명공학전공", "동물생명공학전공"],
+        "image": "images/TARL.png"
     },
-    # 13. TCMG
     "TCMG": {
         "title": "친환경 공간·도시 디자이너",
         "desc": "인간이 살아가는 건축물과 도시 공간, 자연 환경을 아름답고 안전하게 기획·설계합니다.",
-        "depts": ["건축공학과", "건축학과", "토목공학과", "환경공학과"]
+        "depts": ["건축공학과", "건축학과", "토목공학과", "환경공학과"],
+        "image": "images/TCMG.png"
     },
-    # 14. TCML
     "TCML": {
         "title": "스마트 융합 농업 기획자",
         "desc": "첨단 IT 및 바이오 기술을 농업 및 생명 자원에 창의적으로 결합하여 미래 먹거리를 창출합니다.",
-        "depts": ["스마트팜학부", "산업응용경제학과"]
+        "depts": ["스마트팜학부", "산업응용경제학과"],
+        "image": "images/TCML.png"
     },
-    # 15. TCRG
     "TCRG": {
         "title": "해양·지구 환경 과학자",
         "desc": "지구와 바다 생태계, 수산 자원의 원리를 탐구하고 해양 생태계를 보존하는 아이디어를 냅니다.",
-        "depts": ["해양생명과학과", "지구해양과학과", "수산생명의학과", "해양시스템공학과"]
+        "depts": ["해양생명과학과", "지구해양과학과", "수산생명의학과", "해양시스템공학과"],
+        "image": "images/TCRG.png"
     },
-    # 16. TCRL
     "TCRL": {
         "title": "코스메틱·식품 융합 연구원",
         "desc": "일상생활과 밀접한 화장품, 식품, 영양 및 화학 물질을 실용적으로 연구·개발합니다.",
-        "depts": ["화학코스메틱학과", "식품영양학과", "식품생명공학과"]
+        "depts": ["화학코스메틱학과", "식품영양학과", "식품생명공학과"],
+        "image": "images/TCRL.png"
     }
 }
 
@@ -278,7 +278,6 @@ if st.session_state.step < total_q:
     current_idx = st.session_state.step
     q_data = questions[current_idx]
     
-    # 진행률 표시
     progress = (current_idx + 1) / total_q
     st.progress(progress)
     st.write(f"**질문 {current_idx + 1} / {total_q}**")
@@ -335,7 +334,6 @@ else:
     pct_G = round((scores["G"] / 5) * 100)
     pct_L = 100 - pct_G
 
-    # 정확한 대립축 조합
     mbti = ""
     mbti += "S" if scores["S"] >= scores["T"] else "T"
     mbti += "A" if scores["A"] >= scores["C"] else "C"
@@ -349,6 +347,13 @@ else:
     st.markdown("### 🎯 당신의 성격 유형은:")
     st.title(f"✨ {result_data['title']} ({mbti})")
     
+    # 🖼️ [유형 이름 바로 아래 이미지 출력 영역]
+    try:
+        st.image(result_data["image"], use_container_width=True)
+    except Exception:
+        # 이미지 파일이 없더라도 오류로 앱이 튕기지 않도록 예외 처리
+        pass
+
     st.info(result_data["desc"])
 
     st.markdown("---")
