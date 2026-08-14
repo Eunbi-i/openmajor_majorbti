@@ -77,7 +77,7 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin: 5px 0;
+        margin: 16px 0;
         width: 100%;
     }
     .img-center-container img {
@@ -104,37 +104,35 @@ st.markdown("""
         text-align: right;
     }
 
-    /* 💡 [수정] 모바일 1줄 유지 레이아웃 */
+    /* 💡 [83번째 줄] 모바일 1줄 유지 레이아웃 및 중앙 정렬 (두 버튼 간격 직접 설정 가능) */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        gap: 8px !important;
+        gap: 12px !important;              /* 👈 ⭐ [여기서 두 버튼 사이 간격을 직접 조절할 수 있습니다!] (예: 8px, 16px 등) */
         width: 100% !important;
-        justify-content: space-between !important;
+        justify-content: center !important; /* 가운데 정렬로 모아줌 */
     }
     
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        width: 50% !important;
-        min-width: 50% !important;
-        flex: 1 1 50% !important;
+        width: auto !important;             /* 컬럼 너비 강제 50% 고정 해제 */
+        min-width: unset !important;
+        flex: 0 1 auto !important;
         display: flex !important;
     }
 
-    /* 왼쪽 컬럼(이전 버튼) 정렬 */
+    /* 왼쪽/오른쪽 컬럼 내부 버튼 정렬 밀착 */
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        justify-content: flex-start !important;
-    }
-    /* 오른쪽 컬럼(다음 버튼) 정렬 */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
         justify-content: flex-end !important;
     }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+        justify-content: flex-start !important;
+    }
 
-    /* 💡 [핵심 추가] 이전/다음 버튼 사각형 가로 길이 줄이기 (최대 140px 제한 및 여백 조정) */
+    /* 💡 이전/다음 버튼 크기 설정 */
     div[data-testid="stHorizontalBlock"] button {
         max-width: 140px !important;
-        width: auto !important;
-        min-width: 110px !important;
+        width: 130px !important;            /* 버튼 고정 너비 */
         padding-left: 12px !important;
         padding-right: 12px !important;
         font-size: 14px !important;
@@ -254,7 +252,7 @@ questions = [
     {"question": "Q7. 내 주장을 다른 사람에게 설득할 때 가장 강력하다고 믿는 무기는?", "options": [("객관적인 통계 수치, 논리적 근거, 잘 정리된 데이터", "A"), ("와닿는 예시, 직관적인 시각 자료, 참신하고 창의적인 아이디어", "C")]},
     {"question": "Q8. 시험이나 과제를 준비할 때 나의 공부 스타일은?", "options": [("개념의 체계와 기본 원리를 뿌리부터 정석대로 이해하는 편이다.", "A"), ("기출문제를 많이 풀면서 실전에 바로 적용하는 방식을 선호한다.", "C")]},
     {"question": "Q9. 조별 과제를 할 때 내가 더 맡고 싶은 역할은?", "options": [("자료 조사, 통계 분석, 전체적인 논리 흐름과 목차 잡기", "A"), ("PPT 발표 자료 디자인, 아이디어 회의 주도, 발표 연출하기", "C")]},
-    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
+    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간 다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
     {"question": "Q11. 내가 생각하는 학문과 공부의 궁극적인 목적은?", "options": [("거시적인 시스템, 조직, 사회적 구조를 효율적으로 운영하고 관리하는 것", "M"), ("세상이나 생명체, 인간의 근본적인 원리와 본질을 깊이 있게 밝혀내는 것", "R")]},
     {"question": "Q12. 팀을 이루어 일할 때 더 자신 있는 내 모습은?", "options": [("전체 일정, 역할 분담, 자원 배분을 총괄하는 '시스템 관리자'", "M"), ("한 가지 세부 주제를 맡아 깊이 있게 파고드는 '전문 탐구자'", "R")]},
     {"question": "Q13. 연구하거나 배워보고 싶은 대상에 더 가까운 것은?", "options": [("기업, 국가, 법률, 시장, 기술 인프라 등 인간이 구축한 거시 시스템", "M"), ("자연 현상, 인간의 마음, 언어의 역사, 유전자 등 근본적으로 존재하는 대상", "R")]},
@@ -308,7 +306,7 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    # 💡 하단 버튼 2개
+    # 하단 버튼 2개
     col1, col2 = st.columns(2)
     
     with col1:
