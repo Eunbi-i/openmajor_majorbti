@@ -360,7 +360,6 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    # 📌 요청사항 1: 이전/다음 버튼을 모바일에서도 50:50으로 나란히 가로 배치
     col1, col2 = st.columns(2)
     
     with col1:
@@ -369,7 +368,7 @@ if st.session_state.step < total_q:
                 st.session_state.step -= 1
                 st.rerun()
         else:
-            st.write("")  # 첫 번째 질문일 때 공간 유지
+            st.write("")
 
     with col2:
         btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
@@ -412,6 +411,7 @@ else:
     st.markdown("### 🎯 당신의 전공 유형은:")
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
+    # 📌 요청사항 1: 캐릭터 사진 추가 축소 (width=200 지정 및 중앙 정렬)
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_found = False
 
@@ -419,11 +419,11 @@ else:
     with col_m:
         for name in possible_names:
             if os.path.exists(name):
-                st.image(name, use_container_width=True)
+                st.image(name, width=200)
                 img_found = True
                 break
             elif os.path.exists(f"images/{name}"):
-                st.image(f"images/{name}", use_container_width=True)
+                st.image(f"images/{name}", width=200)
                 img_found = True
                 break
 
@@ -431,6 +431,10 @@ else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
     st.info(result_data["desc"])
+
+    # 📌 요청사항 2: 유형 설명 바로 아래에 추천 학과 한 줄 표기
+    depts_str = ", ".join(result_data["depts"])
+    st.markdown(f"💡 **추천 학과**: {depts_str}")
 
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
@@ -455,7 +459,6 @@ else:
     for dept in result_data["depts"]:
         st.markdown(f"- **{dept}**")
 
-    # 📌 요청사항 2: ** 깨짐 없이 완벽하게 볼드 처리된 안내 박스
     st.markdown("""
     <div style="background-color: #d1e7dd; color: #0f5132; padding: 16px; border-radius: 8px; margin: 16px 0;">
         💡 <b>글로벌자율학부(자유전공)의 특별함!</b><br>
@@ -472,7 +475,6 @@ else:
         st.session_state.answers = {}
         st.rerun()
 
-    # 📌 요청사항 3: 실제 사용자가 지정한 정확한 링크 반영
     st.markdown("---")
     st.markdown("### 🔗 제주대학교 관련 링크")
     
