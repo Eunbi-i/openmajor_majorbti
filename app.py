@@ -3,6 +3,7 @@ import glob
 import re
 import base64
 import io
+import urllib.request
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 
@@ -230,30 +231,40 @@ questions = [
     {"question": "Q20. 나를 표현하는 단어로 더 마음에 드는 것은?", "options": [("시대를 읽고 세상을 연결하는 '글로벌 융합형 통섭가'", "G"), ("자신만의 영역이 확실한 '스페셜리스트(Specialist)'", "L")]}
 ]
 
+# 🔤 한글 폰트 자동 다운로드 및 구하는 함수
+@st.cache_resource
+def get_korean_font():
+    font_filename = "NanumGothic.ttf"
+    if not os.path.exists(font_filename):
+        url = "https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Regular.ttf"
+        try:
+            urllib.request.urlretrieve(url, font_filename)
+        except Exception:
+            pass
+    return font_filename if os.path.exists(font_filename) else None
+
 # 🖼️ 9:16 이미지 카드 생성 함수 (Pillow)
 def generate_916_card(mbti, title, desc, depts_str, img_path):
-    width, height = 1080, 1920 # 9:16 카드 크기
+    width, height = 1080, 1920
     image = Image.new("RGB", (width, height), "#FFFFFF")
     draw = ImageDraw.Draw(image)
 
-    # 폰트 설정 (기본 폰트 사용 / 한글 지원 시스템 폰트)
-    def load_font(size):
-        font_paths = [
-            "C:/Windows/Fonts/malgun.ttf", # Windows 맑은 고딕
-            "/System/Library/Fonts/Supplemental/AppleGothic.ttf", # Mac
-            "/usr/share/fonts/truetype/nanum/NanumGothic.ttf" # Linux
-        ]
-        for font_p in font_paths:
-            if os.path.exists(font_p):
-                return ImageFont.truetype(font_p, size)
+    font_path = get_korean_font()
+    
+    def get_font(size):
+        if font_path:
+            try:
+                return ImageFont.truetype(font_path, size)
+            except Exception:
+                pass
         return ImageFont.load_default()
 
-    font_sub = load_font(32)
-    font_title = load_font(52)
-    font_mbti = load_font(60)
-    font_desc = load_font(36)
-    font_dept_title = load_font(38)
-    font_dept = load_font(34)
+    font_sub = get_font(32)
+    font_title = get_font(52)
+    font_mbti = get_font(60)
+    font_desc = get_font(36)
+    font_dept_title = get_font(38)
+    font_dept = get_font(34)
 
     # 1. 헤더
     draw.text((80, 120), "제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험", fill="#A0A0A0", font=font_sub)
@@ -268,7 +279,6 @@ def generate_916_card(mbti, title, desc, depts_str, img_path):
     # 3. 설명 박스
     draw.rectangle([(80, 520), (width - 80, 680)], fill="#F0F9FF", outline="#0284C7", width=3)
     
-    # 설명문 줄바꿈 처리
     words = desc.split(' ')
     lines, current_line = [], ""
     for word in words:
@@ -288,13 +298,11 @@ def generate_916_card(mbti, title, desc, depts_str, img_path):
     if img_path and os.path.exists(img_path):
         char_img = Image.open(img_path).convert("RGBA")
         char_img = char_img.resize((500, 500), Image.Resampling.LANCZOS)
-        # alpha mask 처리
         image.paste(char_img, ((width - 500) // 2, 730), char_img)
 
     # 5. 추천 학과
     draw.text((80, 1300), "💡 추천 학과:", fill="#111827", font=font_dept_title)
     
-    # 추천 학과 줄바꿈 처리
     dept_lines, current_dept = [], ""
     for dept in depts_str.split(', '):
         if len(current_dept + dept) > 22:
@@ -310,7 +318,6 @@ def generate_916_card(mbti, title, desc, depts_str, img_path):
         draw.text((80, y_dept), line, fill="#4B5563", font=font_dept)
         y_dept += 50
 
-    # 바이트 버퍼로 저장
     buf = io.BytesIO()
     image.save(buf, format="PNG")
     return buf.getvalue()
@@ -445,7 +452,7 @@ else:
     depts_str = ", ".join(clean_depts)
     st.markdown(f'<div style="font-size: 16px; margin-top: 12px; margin-bottom: 8px;">💡 <b>추천 학과</b>: {depts_str}</div>', unsafe_allow_html=True)
 
-    # 📌 6. [9:16 비율 이미지 생성 및 다운로드 버튼] (추천 학과와 성향지표 사이)
+    # 📌 6. [9:16 비율 이미지 생성 및 다운로드 버튼]
     card_bytes = generate_916_card(mbti, result_data["title"], result_data["desc"], depts_str, img_path)
     
     st.download_button(
