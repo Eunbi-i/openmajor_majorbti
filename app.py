@@ -14,39 +14,23 @@ st.markdown("""
 <style>
     /* 메인 제목 크기 축소 */
     .custom-title {
-        font-size: 33px !important;
+        font-size: 28px !important;
         font-weight: 700 !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
         line-height: 1.3 !important;
     }
     
-    /* 선택지 사각형 카드 버튼 스타일 */
-    div.stButton > button.option-btn {
-        width: 100%;
-        text-align: left;
-        padding: 16px 20px;
-        font-size: 16px;
-        border-radius: 10px;
-        border: 1px solid #3e424a;
-        background-color: #1e2229;
-        color: #e0e0e0;
-        margin-bottom: 8px;
-        transition: all 0.2s ease;
+    /* 결과 제목 크기 축소 (약 24px) */
+    .result-title {
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        margin-top: 8px !important;
+        margin-bottom: 16px !important;
     }
-    
-    /* 선택된 선택지 사각형 카드 스타일 (더 진하고 명확한 색상) */
-    div.stButton > button.option-btn-selected {
-        width: 100%;
-        text-align: left;
-        padding: 16px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 10px;
-        border: 2px solid #4f46e5;
-        background-color: #312e81;
-        color: #ffffff;
-        margin-bottom: 8px;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+
+    /* 성향 지표 오른쪽 정렬 클래스 */
+    .text-right {
+        text-align: right;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -309,7 +293,7 @@ if "step" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 
-# 📌 요구사항: 부제목 순서 변경 및 타이틀 세팅
+# 헤더 정보
 st.markdown('<div class="custom-title">🎓 전공탐색 MBTI</div>', unsafe_allow_html=True)
 st.caption("제주대학교 전공체험의 날 글로벌자율학부 자유전공 체험")
 st.caption("개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항")
@@ -328,20 +312,15 @@ if st.session_state.step < total_q:
     st.progress(progress)
     st.write(f"**질문 {current_idx + 1} / {total_q}**")
     
-    # 📌 여백 제거 및 질문 제목
     st.subheader(q_data["question"])
     st.write("선택지를 골라주세요:")
     
-    # 현재 저장된 선택지 값 확인 (기본값: 0번째 선택지)
     selected_option = st.session_state.answers.get(current_idx, 0)
     
-    # 📌 사각형 박스 형태의 선택지 구현
     for idx, (opt_text, code) in enumerate(q_data["options"]):
         is_selected = (selected_option == idx)
         prefix = "🔘 " if is_selected else "⚪ "
         btn_text = f"{prefix}{opt_text}"
-        
-        # 선택 여부에 따른 스타일 분기
         btn_type = "primary" if is_selected else "secondary"
         
         if st.button(btn_text, key=f"opt_{current_idx}_{idx}", use_container_width=True, type=btn_type):
@@ -350,7 +329,6 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    # 📌 이전 / 다음 질문 버튼
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -397,20 +375,23 @@ else:
 
     st.balloons()
     
-    st.markdown("### 🎯 당신의 성격 유형은:")
-    st.title(f"✨ {result_data['title']} ({mbti})")
+    # 📌 요청사항 2: 문구 수정 ("당신의 전공 유형은:")
+    st.markdown("### 🎯 당신의 전공 유형은:")
     
-    # 🖼️ 이미지 자동 검색 로직
+    # 📌 요청사항 1: 글씨 크기 축소 (custom-title CSS 클래스 적용)
+    st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
+    
+    # 📌 요청사항 4: 이미지 크기 축소 (width=300 지정)
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_found = False
 
     for name in possible_names:
         if os.path.exists(name):
-            st.image(name, use_container_width=True)
+            st.image(name, width=300)
             img_found = True
             break
         elif os.path.exists(f"images/{name}"):
-            st.image(f"images/{name}", use_container_width=True)
+            st.image(f"images/{name}", width=300)
             img_found = True
             break
 
@@ -423,24 +404,25 @@ else:
     st.subheader("📊 4개 영역별 성향 지표")
     st.caption("선택하신 답변을 바탕으로 한 영역별 비율입니다.")
 
+    # 📌 요청사항 3: 영역 지표 양쪽 정렬 (왼쪽 text-left / 오른쪽 text-right)
     col_a, col_b = st.columns([1, 1])
-    col_a.write(f"**사회/인간 (S)**: {pct_S}%")
-    col_b.write(f"**기술/자연 (T)**: {pct_T}%")
+    col_a.markdown(f"**사회/인간 (S)**: {pct_S}%")
+    col_b.markdown(f'<div class="text-right">**기술/자연 (T)**: {pct_T}%</div>', unsafe_allow_html=True)
     st.progress(pct_S / 100)
 
     col_a, col_b = st.columns([1, 1])
-    col_a.write(f"**분석/논리 (A)**: {pct_A}%")
-    col_b.write(f"**창의/응용 (C)**: {pct_C}%")
+    col_a.markdown(f"**분석/논리 (A)**: {pct_A}%")
+    col_b.markdown(f'<div class="text-right">**창의/응용 (C)**: {pct_C}%</div>', unsafe_allow_html=True)
     st.progress(pct_A / 100)
 
     col_a, col_b = st.columns([1, 1])
-    col_a.write(f"**경영/시스템 (M)**: {pct_M}%")
-    col_b.write(f"**연구/자연 (R)**: {pct_R}%")
+    col_a.markdown(f"**경영/시스템 (M)**: {pct_M}%")
+    col_b.markdown(f'<div class="text-right">**연구/자연 (R)**: {pct_R}%</div>', unsafe_allow_html=True)
     st.progress(pct_M / 100)
 
     col_a, col_b = st.columns([1, 1])
-    col_a.write(f"**글로벌/공공 (G)**: {pct_G}%")
-    col_b.write(f"**전문/기술 (L)**: {pct_L}%")
+    col_a.markdown(f"**글로벌/공공 (G)**: {pct_G}%")
+    col_b.markdown(f'<div class="text-right">**전문/기술 (L)**: {pct_L}%</div>', unsafe_allow_html=True)
     st.progress(pct_G / 100)
 
     st.markdown("---")
