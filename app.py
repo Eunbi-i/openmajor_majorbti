@@ -104,29 +104,38 @@ st.markdown("""
         text-align: right;
     }
 
-    /* 💡 [핵심 수정] 이전/다음 버튼을 중앙으로 모으고 간격을 좁히는 CSS */
+    /* 🎯 [여기서 간격을 조절합니다 - Line 80~88] */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: center !important; /* 중앙 모음 */
-        gap: 8px !important;               /* 사이 간격 8px 로 축소 */
+        gap: 16px !important;              /* 👈 버튼 사이 간격 (필요시 10px 등으로 축소 가능) */
         width: 100% !important;
+        justify-content: center !important; /* 👈 space-between 대신 center로 정렬하여 중앙으로 모음 */
     }
     
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        width: auto !important;
-        min-width: unset !important;
-        flex: 0 1 auto !important;          /* 너비 자동 조절 */
+        width: 50% !important;
+        min-width: 50% !important;
+        flex: 1 1 50% !important;
         display: flex !important;
-        justify-content: center !important;
     }
 
-    /* 버튼 가로 크기 및 여백 지정 */
+    /* 왼쪽 컬럼(이전 버튼) 정렬 - 오른쪽 밀착으로 간격 축소 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+        justify-content: flex-end !important;
+    }
+    /* 오른쪽 컬럼(다음 버튼) 정렬 - 왼쪽 밀착으로 간격 축소 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+        justify-content: flex-start !important;
+    }
+
+    /* 이전/다음 버튼 사각형 가로 길이 및 디자인 유지 */
     div[data-testid="stHorizontalBlock"] button {
-        width: 130px !important;            /* 적당한 사각형 가로 길이 */
-        padding-left: 8px !important;
-        padding-right: 8px !important;
+        max-width: 140px !important;
+        width: 100% !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
         font-size: 14px !important;
     }
 </style>
@@ -298,7 +307,7 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    # 💡 이전 / 다음 버튼
+    # 💡 하단 버튼 2개
     col1, col2 = st.columns(2)
     
     with col1:
