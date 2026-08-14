@@ -1,4 +1,5 @@
 import os
+import glob
 import streamlit as st
 
 # 페이지 기본 설정
@@ -8,7 +9,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# 16가지 유형 매핑 데이터 (제주대학교 자유전공학부 진입 가능 학과 완벽 반영)
+# 16가지 유형 매핑 데이터
 TYPE_INFO = {
     "SAMG": {
         "title": "글로벌 리더형",
@@ -349,25 +350,24 @@ else:
     st.markdown("### 🎯 당신의 성격 유형은:")
     st.title(f"✨ {result_data['title']} ({mbti})")
     
-    # 🖼️ [확장자 자동 탐색 방식의 이미지 출력]
-    extensions = [".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG"]
-    img_loaded = False
+    # 🖼️ [현재 위치에서 바로 이미지를 찾는 로직 (images 폴더 없이도 인식 가능!)]
+    possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
+    img_found = False
 
-    for ext in extensions:
-        possible_path = f"images/{mbti}{ext}"
-        if os.path.exists(possible_path):
-            st.image(possible_path, use_container_width=True)
-            img_loaded = True
+    for name in possible_names:
+        # 1. 루트(메인) 위치에서 검색
+        if os.path.exists(name):
+            st.image(name, use_container_width=True)
+            img_found = True
+            break
+        # 2. images 폴더 안에서 검색
+        elif os.path.exists(f"images/{name}"):
+            st.image(f"images/{name}", use_container_width=True)
+            img_found = True
             break
 
-    # 이미지 파일을 서버에서 아예 찾을 수 없는 경우에만 에러 출력
-    if not img_loaded:
-        st.error(
-            f"❌ 이미지를 찾을 수 없습니다.\n\n"
-            f"- **찾으려는 파일명:** `images/{mbti}.png` (또는 .jpg)\n"
-            f"- **현재 실행 위치:** `{os.getcwd()}`\n\n"
-            f"💡 **점검 사항:** GitHub 저장소 상위 위치에 `images` 폴더가 업로드되어 있는지 확인해 주세요!"
-        )
+    if not img_found:
+        st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
     st.info(result_data["desc"])
 
@@ -403,7 +403,7 @@ else:
     st.success("""
     💡 **자유전공학부의 특별함!**
     지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?
-    자유전공학부에 입학하면 **1학년 동안 이 학과들의 수업을 직접 들어보고**
+    자유전공학부에 입학하면 **1학년 동안 이 학과들의 수업을 들어보고**
     나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
     """)
 
