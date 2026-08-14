@@ -104,39 +104,29 @@ st.markdown("""
         text-align: right;
     }
 
-    /* 💡 [수정] 모바일 1줄 유지 레이아웃 */
+    /* 💡 [핵심 수정] 이전/다음 버튼을 중앙으로 모으고 간격을 좁히는 CSS */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        gap: 8px !important;
+        justify-content: center !important; /* 중앙 모음 */
+        gap: 8px !important;               /* 사이 간격 8px 로 축소 */
         width: 100% !important;
-        justify-content: space-between !important;
     }
     
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        width: 50% !important;
-        min-width: 50% !important;
-        flex: 1 1 50% !important;
-        display: flex !important;
-    }
-
-    /* 왼쪽 컬럼(이전 버튼) 정렬 */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        justify-content: flex-start !important;
-    }
-    /* 오른쪽 컬럼(다음 버튼) 정렬 */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
-        justify-content: flex-end !important;
-    }
-
-    /* 💡 [핵심 추가] 이전/다음 버튼 사각형 가로 길이 줄이기 (최대 140px 제한 및 여백 조정) */
-    div[data-testid="stHorizontalBlock"] button {
-        max-width: 140px !important;
         width: auto !important;
-        min-width: 110px !important;
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+        min-width: unset !important;
+        flex: 0 1 auto !important;          /* 너비 자동 조절 */
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    /* 버튼 가로 크기 및 여백 지정 */
+    div[data-testid="stHorizontalBlock"] button {
+        width: 130px !important;            /* 적당한 사각형 가로 길이 */
+        padding-left: 8px !important;
+        padding-right: 8px !important;
         font-size: 14px !important;
     }
 </style>
@@ -308,7 +298,7 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    # 💡 하단 버튼 2개
+    # 💡 이전 / 다음 버튼
     col1, col2 = st.columns(2)
     
     with col1:
