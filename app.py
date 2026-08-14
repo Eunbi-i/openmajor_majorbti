@@ -14,7 +14,7 @@ st.markdown("""
 <style>
     /* 상단 헤더 스타일 */
     .header-sub1 {
-        font-size: 17px !important;
+        font-size: 15px !important;
         color: #a0a0a0 !important;
         margin-bottom: 4px !important;
     }
