@@ -61,6 +61,19 @@ st.markdown("""
         color: #0C4A6E;
     }
 
+    /* 이미지 150x150px 완벽 중앙 정렬 스타일 */
+    .img-center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 12px 0;
+    }
+    .img-center-container img {
+        width: 150px !important;
+        height: 150px !important;
+        object-fit: contain;
+    }
+
     /* 모바일 대응 성향 지표 Flexbox */
     .indicator-row {
         display: flex;
@@ -427,16 +440,16 @@ else:
 
     st.balloons()
     
-    # 📌 1. '당신의 전공 유형은:' (2pt 작게)
+    # 📌 1. '당신의 전공 유형은:' (18px)
     st.markdown('<div class="result-sub">🎯 당신의 전공 유형은:</div>', unsafe_allow_html=True)
     
-    # 📌 2. 유형 이름 (2pt 크게)
+    # 📌 2. 유형 이름 (24px)
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
-    # 📌 3. 유형 설명글 (1pt 작게)
+    # 📌 3. 유형 설명글 (13px)
     st.markdown(f'<div class="result-desc-box">{result_data["desc"]}</div>', unsafe_allow_html=True)
     
-    # 📌 사진 찾기 및 크기 50% 축소 처리 후 가운데 정렬
+    # 📌 사진 찾기
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_path = None
     for name in possible_names:
@@ -447,12 +460,11 @@ else:
             img_path = f"images/{name}"
             break
 
-    # 📌 4. 사진 크기 약 50% 축소 및 완벽 가운데 정렬
+    # 📌 4. 150px x 150px 크기로 이미지 가운데 정렬 출력
     if img_path:
-        # 좌우 여백 비율을 넓혀서 중앙 이미지를 아담하게 줄임
-        col_l, col_m, col_r = st.columns([1.5, 2, 1.5])
+        col_l, col_m, col_r = st.columns([1, 1, 1])
         with col_m:
-            st.image(img_path, use_container_width=True)
+            st.image(img_path, width=150)
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
