@@ -2,10 +2,7 @@ import os
 import glob
 import re
 import base64
-import io
-import urllib.request
 import streamlit as st
-from PIL import Image, ImageDraw, ImageFont
 
 # 페이지 기본 설정
 st.set_page_config(
@@ -218,7 +215,7 @@ questions = [
     {"question": "Q7. 내 주장을 다른 사람에게 설득할 때 가장 강력하다고 믿는 무기는?", "options": [("객관적인 통계 수치, 논리적 근거, 잘 정리된 데이터", "A"), ("와닿는 예시, 직관적인 시각 자료, 참신하고 창의적인 아이디어", "C")]},
     {"question": "Q8. 시험이나 과제를 준비할 때 나의 공부 스타일은?", "options": [("개념의 체계와 기본 원리를 뿌리부터 정석대로 이해하는 편이다.", "A"), ("기출문제를 많이 풀면서 실전에 바로 적용하는 방식을 선호한다.", "C")]},
     {"question": "Q9. 조별 과제를 할 때 내가 더 맡고 싶은 역할은?", "options": [("자료 조사, 통계 분석, 전체적인 논리 흐름과 목차 잡기", "A"), ("PPT 발표 자료 디자인, 아이디어 회의 주도, 발표 연출하기", "C")]},
-    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
+    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간 다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
     {"question": "Q11. 내가 생각하는 학문과 공부의 궁극적인 목적은?", "options": [("거시적인 시스템, 조직, 사회적 구조를 효율적으로 운영하고 관리하는 것", "M"), ("세상이나 생명체, 인간의 근본적인 원리와 본질을 깊이 있게 밝혀내는 것", "R")]},
     {"question": "Q12. 팀을 이루어 일할 때 더 자신 있는 내 모습은?", "options": [("전체 일정, 역할 분담, 자원 배분을 총괄하는 '시스템 관리자'", "M"), ("한 가지 세부 주제를 맡아 깊이 있게 파고드는 '전문 탐구자'", "R")]},
     {"question": "Q13. 연구하거나 배워보고 싶은 대상에 더 가까운 것은?", "options": [("기업, 국가, 법률, 시장, 기술 인프라 등 인간이 구축한 거시 시스템", "M"), ("자연 현상, 인간의 마음, 언어의 역사, 유전자 등 근본적으로 존재하는 대상", "R")]},
@@ -230,98 +227,6 @@ questions = [
     {"question": "Q19. 어떤 일을 할 때 더 만족감을 느끼는가?", "options": [("불특정 다수의 많은 사람들과 사회 전체에 긍정적 영향력을 줄 때", "G"), ("눈앞의 구체적인 문제나 기계/제품/기술을 완벽하게 해결하고 완성할 때", "L")]},
     {"question": "Q20. 나를 표현하는 단어로 더 마음에 드는 것은?", "options": [("시대를 읽고 세상을 연결하는 '글로벌 융합형 통섭가'", "G"), ("자신만의 영역이 확실한 '스페셜리스트(Specialist)'", "L")]}
 ]
-
-# 🔤 한글 폰트 자동 다운로드 및 구하는 함수
-@st.cache_resource
-def get_korean_font():
-    font_filename = "NanumGothic.ttf"
-    if not os.path.exists(font_filename):
-        url = "https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Regular.ttf"
-        try:
-            urllib.request.urlretrieve(url, font_filename)
-        except Exception:
-            pass
-    return font_filename if os.path.exists(font_filename) else None
-
-# 🖼️ 9:16 이미지 카드 생성 함수 (Pillow)
-def generate_916_card(mbti, title, desc, depts_str, img_path):
-    width, height = 1080, 1920
-    image = Image.new("RGB", (width, height), "#FFFFFF")
-    draw = ImageDraw.Draw(image)
-
-    font_path = get_korean_font()
-    
-    def get_font(size):
-        if font_path:
-            try:
-                return ImageFont.truetype(font_path, size)
-            except Exception:
-                pass
-        return ImageFont.load_default()
-
-    font_sub = get_font(32)
-    font_title = get_font(52)
-    font_mbti = get_font(60)
-    font_desc = get_font(36)
-    font_dept_title = get_font(38)
-    font_dept = get_font(34)
-
-    # 1. 헤더
-    draw.text((80, 120), "제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험", fill="#A0A0A0", font=font_sub)
-    draw.text((80, 170), "🎓 전공탐색 MBTI TEST", fill="#111827", font=font_title)
-    draw.text((80, 245), "개인 맞춤형 전공 탐색 및 추천 프로그램", fill="#808080", font=font_sub)
-    draw.line([(80, 310), (width - 80, 310)], fill="#E5E7EB", width=3)
-
-    # 2. 전공 유형
-    draw.text((80, 360), "🎯 당신의 전공 유형은:", fill="#374151", font=font_sub)
-    draw.text((80, 420), f"✨ {title} ({mbti})", fill="#1E3A8A", font=font_mbti)
-
-    # 3. 설명 박스
-    draw.rectangle([(80, 520), (width - 80, 680)], fill="#F0F9FF", outline="#0284C7", width=3)
-    
-    words = desc.split(' ')
-    lines, current_line = [], ""
-    for word in words:
-        if len(current_line + word) > 28:
-            lines.append(current_line)
-            current_line = word + " "
-        else:
-            current_line += word + " "
-    lines.append(current_line)
-    
-    y_text = 550
-    for line in lines:
-        draw.text((110, y_text), line.strip(), fill="#0C4A6E", font=font_desc)
-        y_text += 50
-
-    # 4. 캐릭터 이미지 배치 (중앙)
-    if img_path and os.path.exists(img_path):
-        char_img = Image.open(img_path).convert("RGBA")
-        char_img = char_img.resize((500, 500), Image.Resampling.LANCZOS)
-        image.paste(char_img, ((width - 500) // 2, 730), char_img)
-
-    # 5. 추천 학과
-    draw.text((80, 1300), "💡 추천 학과:", fill="#111827", font=font_dept_title)
-    
-    dept_lines, current_dept = [], ""
-    for dept in depts_str.split(', '):
-        if len(current_dept + dept) > 22:
-            dept_lines.append(current_dept)
-            current_dept = dept + ", "
-        else:
-            current_dept += dept + ", "
-    if current_dept:
-        dept_lines.append(current_dept.rstrip(", "))
-        
-    y_dept = 1360
-    for line in dept_lines:
-        draw.text((80, y_dept), line, fill="#4B5563", font=font_dept)
-        y_dept += 50
-
-    buf = io.BytesIO()
-    image.save(buf, format="PNG")
-    return buf.getvalue()
-
 
 # 세션 상태 초기화
 if "step" not in st.session_state:
@@ -451,18 +356,6 @@ else:
     clean_depts = [re.sub(r'^(사회과학대학|경상대학|인문대학|자연과학대학|해양과학대학|공과대학|생명자원과학대학)\s*', '', dept) for dept in result_data["depts"]]
     depts_str = ", ".join(clean_depts)
     st.markdown(f'<div style="font-size: 16px; margin-top: 12px; margin-bottom: 8px;">💡 <b>추천 학과</b>: {depts_str}</div>', unsafe_allow_html=True)
-
-    # 📌 6. [9:16 비율 이미지 생성 및 다운로드 버튼]
-    card_bytes = generate_916_card(mbti, result_data["title"], result_data["desc"], depts_str, img_path)
-    
-    st.download_button(
-        label="📸 결과 카드 저장하기 (9:16 스토리 비율)",
-        data=card_bytes,
-        file_name=f"{mbti}_result_card.png",
-        mime="image/png",
-        use_container_width=True,
-        type="primary"
-    )
 
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
