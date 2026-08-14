@@ -71,8 +71,8 @@ st.markdown("""
         width: 100%;
     }
     .img-center-container img {
-        width: 170px !important;
-        height: 170px !important;
+        width: 200px !important;
+        height: 200px !important;
         object-fit: contain;
     }
 
