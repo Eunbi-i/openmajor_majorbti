@@ -14,12 +14,12 @@ st.markdown("""
 <style>
     /* 상단 헤더 스타일 */
     .header-sub1 {
-        font-size: 15px !important;
+        font-size: 14px !important;
         color: #a0a0a0 !important;
         margin-bottom: 4px !important;
     }
     .custom-title {
-        font-size: 33px !important;
+        font-size: 28px !important;
         font-weight: 800 !important;
         margin-top: 4px !important;
         margin-bottom: 4px !important;
