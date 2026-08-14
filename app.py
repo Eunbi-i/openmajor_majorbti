@@ -464,7 +464,7 @@ else:
     if img_path:
         col_l, col_m, col_r = st.columns([1, 1, 1])
         with col_m:
-            st.image(img_path, width=150)
+            st.image(img_path, width=200)
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
