@@ -14,12 +14,12 @@ st.markdown("""
 <style>
     /* 상단 헤더 스타일 */
     .header-sub1 {
-        font-size: 14px !important;
+        font-size: 17px !important;
         color: #a0a0a0 !important;
         margin-bottom: 4px !important;
     }
     .custom-title {
-        font-size: 28px !important;
+        font-size: 30px !important;
         font-weight: 800 !important;
         margin-top: 4px !important;
         margin-bottom: 4px !important;
@@ -39,14 +39,6 @@ st.markdown("""
         margin-bottom: 16px !important;
     }
 
-    /* 이미지 중앙 정렬 전용 컨테이너 */
-    .center-img-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 16px 0;
-    }
-
     /* 모바일 대응 성향 지표 Flexbox */
     .indicator-row {
         display: flex;
@@ -63,6 +55,13 @@ st.markdown("""
     .indicator-right {
         font-weight: bold;
         text-align: right;
+    }
+
+    /* 모바일에서도 버튼 2개가 가로로 50%씩 고정되도록 설정 */
+    div[data-testid="column"] {
+        width: 50% !important;
+        flex: 1 1 50% !important;
+        min-width: 50% !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -325,7 +324,7 @@ if "step" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 
-# 📌 요청사항 1: 헤더 타이틀 구성 순서 수정
+# 헤더 정보
 st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
 st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
 st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
@@ -361,13 +360,16 @@ if st.session_state.step < total_q:
 
     st.write("")
     
-    col1, col2 = st.columns([1, 1])
+    # 📌 요청사항 1: 이전/다음 버튼을 모바일에서도 50:50으로 나란히 가로 배치
+    col1, col2 = st.columns(2)
     
     with col1:
         if current_idx > 0:
             if st.button("⬅️ 이전 질문", use_container_width=True):
                 st.session_state.step -= 1
                 st.rerun()
+        else:
+            st.write("")  # 첫 번째 질문일 때 공간 유지
 
     with col2:
         btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
@@ -410,7 +412,6 @@ else:
     st.markdown("### 🎯 당신의 전공 유형은:")
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
-    # 📌 요청사항 2: 사진 중앙 정렬 (HTML Flexbox 사용)
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_found = False
 
@@ -435,7 +436,6 @@ else:
     st.subheader("📊 4개 영역별 성향 지표")
     st.caption("선택하신 답변을 바탕으로 한 영역별 비율입니다.")
 
-    # 📌 요청사항 3: 모바일 완벽 대응 양쪽 정렬 (Pure HTML Flexbox)
     def render_indicator(left_text, left_pct, right_text, right_pct):
         st.markdown(f"""
         <div class="indicator-row">
@@ -455,15 +455,15 @@ else:
     for dept in result_data["depts"]:
         st.markdown(f"- **{dept}**")
 
-    # 📌 요청사항 4: 문구 수정 (글로벌자율학부(자유전공) 반영)
-    st.success("""
-    💡 **글로벌자율학부(자유전공)의 특별함!**  
-    지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?  
-    **글로벌자율학부(자유전공)**에 입학하면 **1학년 동안 이 학과들의 수업을 들어보고**  
-    나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
-    """)
+    # 📌 요청사항 2: ** 깨짐 없이 완벽하게 볼드 처리된 안내 박스
+    st.markdown("""
+    <div style="background-color: #d1e7dd; color: #0f5132; padding: 16px; border-radius: 8px; margin: 16px 0;">
+        💡 <b>글로벌자율학부(자유전공)의 특별함!</b><br>
+        지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?<br>
+        <b>글로벌자율학부(자유전공)</b>에 입학하면 <b>1학년 동안 이 학과들의 수업을 들어보고</b> 나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
+    </div>
+    """, unsafe_allow_html=True)
 
-    # 📌 요청사항 5: 참고용 안내 문구 추가
     st.caption("⚠️ **본 테스트는 전공 탐색을 위한 참고용으로만 활용해 주시기 바랍니다.**")
 
     st.write("")
@@ -472,14 +472,14 @@ else:
         st.session_state.answers = {}
         st.rerun()
 
-    # 📌 요청사항 6: 하단 관련 링크 모음 추가
+    # 📌 요청사항 3: 실제 사용자가 지정한 정확한 링크 반영
     st.markdown("---")
     st.markdown("### 🔗 제주대학교 관련 링크")
     
     col_link1, col_link2 = st.columns(2)
     with col_link1:
-        st.link_button("📸 2026 자유전공 인스타그램", "https://www.instagram.com/", use_container_width=True)
-        st.link_button("🏫 글로벌자율학부 홈페이지", "https://www.jejunu.ac.kr/", use_container_width=True)
+        st.link_button("📸 2026 자유전공 인스타그램", "https://www.instagram.com/jnu_start_2026?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", use_container_width=True)
+        st.link_button("🏫 제주대학교 자유전공 홈페이지", "https://openmajor.jejunu.ac.kr/free/index.htm", use_container_width=True)
     with col_link2:
-        st.link_button("🎓 제주대학교 입학처", "https://ibhak.jejunu.ac.kr/", use_container_width=True)
+        st.link_button("🎓 제주대학교 입학처", "https://ibsi.jejunu.ac.kr/main", use_container_width=True)
         st.link_button("🏛️ 제주대학교 단과대학 안내", "https://www.jejunu.ac.kr/college/info", use_container_width=True)
