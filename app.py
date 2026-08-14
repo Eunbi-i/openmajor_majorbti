@@ -8,73 +8,73 @@ st.set_page_config(
     layout="centered"
 )
 
-# 16가지 유형 매핑 데이터 (확장자 .PNG 대문자 반영)
+# 16가지 유형 매핑 데이터 (확장자 .png 소문자 반영)
 TYPE_INFO = {
     "SAMG": {
         "title": "글로벌 리더형",
         "desc": "사회적 현상을 논리적으로 분석하며, 정책·공공 분야 및 국제 관계를 다루는 데 강점이 있습니다.",
         "depts": ["사회과학대학 정치외교학과", "사회과학대학 행정학과", "경상대학 무역학과"],
-        "image": "images/SAMG.PNG"
+        "image": "images/SAMG.png"
     },
     "SAML": {
         "title": "비즈니스 데이터 전략가",
         "desc": "시장과 기업의 데이터를 분석하고 조직의 시스템 및 수치를 효율적으로 관리합니다.",
         "depts": ["경상대학 경영학과", "경상대학 회계학과", "경상대학 경영정보학과"],
-        "image": "images/SAML.PNG"
+        "image": "images/SAML.png"
     },
     "SARG": {
         "title": "인문학적 사색가",
         "desc": "인간과 사회의 근본적인 사상, 언어, 역사를 논리적·학술적으로 깊이 탐구합니다.",
         "depts": ["인문대학 국어국문학과", "인문대학 사학과", "인문대학 철학과"],
-        "image": "images/SARG.PNG"
+        "image": "images/SARG.png"
     },
     "SARL": {
         "title": "글로벌 언어·문화 전문가",
         "desc": "세계 여러 나라의 언어와 문학을 체계적으로 연구하고 글로벌 감각을 키웁니다.",
         "depts": ["인문대학 영어영문학과", "인문대학 독일학과", "인문대학 일어일문학과", "인문대학 중어중문학과"],
-        "image": "images/SARL.PNG"
+        "image": "images/SARL.png"
     },
     "SCMG": {
         "title": "미디어 트렌드 세터",
         "desc": "사회 트렌드와 대중 문화를 재빨리 캐치하여 콘텐츠, 미디어, 관광 상품을 기획합니다.",
         "depts": ["사회과학대학 언론홍보학과", "경상대학 관광경영학과", "경상대학 관광개발학과"],
-        "image": "images/SCMG.PNG"
+        "image": "images/SCMG.png"
     },
     "SCML": {
         "title": "인간 중심 서비스 전문가",
         "desc": "사람들의 삶의 질, 사회적 환경, 라이프스타일을 섬세하게 케어하고 창의적으로 표현합니다.",
         "depts": ["인문대학 사회학과", "자연과학대학 생활환경복지학과", "자연과학대학 패션의류학과"],
-        "image": "images/SCML.PNG"
+        "image": "images/SCML.png"
     },
     "SCRG": {
         "title": "공공 경제 전문가",
         "desc": "국가와 시장 전체의 경제 흐름을 독창적으로 분석하고 사회적 자원의 배분을 연구합니다.",
         "depts": ["사회과학대학 경제학과"],
-        "image": "images/SCRG.PNG"
+        "image": "images/SCRG.png"
     },
     "SCRL": {
         "title": "해양 공공 안전 기획자",
         "desc": "바다라는 특수 환경에서 공공의 안전, 법률, 해양 행정 업무를 창의적·실용적으로 수행합니다.",
         "depts": ["해양과학대학 해양산업경찰학과"],
-        "image": "images/SCRL.PNG"
+        "image": "images/SCRL.png"
     },
     "TAMG": {
         "title": "미래 첨단 ICT 엔지니어",
         "desc": "IT 시스템, 소프트웨어, 통신 및 전자 기술을 바탕으로 디지털 미래를 설계합니다.",
         "depts": ["공과대학 컴퓨터공학과", "공과대학 통신공학과", "공과대학 전자공학과"],
-        "image": "images/TAMG.PNG"
+        "image": "images/TAMG.png"
     },
     "TAML": {
         "title": "스마트 에너지·메카 닥터",
         "desc": "기계, 전기, 원자력, 에너지 시스템 등 산업의 핵심 파워를 구축하고 제어합니다.",
         "depts": ["공과대학 전기공학과", "공과대학 기계시스템공학과", "공과대학 원자력공학과", "공과대학 화공그린에너지학과"],
-        "image": "images/TAML.PNG"
+        "image": "images/TAML.png"
     },
     "TARG": {
         "title": "기초 수리·물리 탐구자",
         "desc": "우주와 자연계의 근본 법칙을 수학적 논리와 수식으로 파헤치는 수리적 탐구자입니다.",
         "depts": ["자연과학대학 수학과", "자연과학대학 물리학과"],
-        "image": "images/TARG.PNG"
+        "image": "images/TARG.png"
     },
     "TARL": {
         "title": "생명 바이오 연구원",
@@ -87,19 +87,19 @@ TYPE_INFO = {
             "생명자원과학대학 생명공학부 분자생명공학전공",
             "생명자원과학대학 생명공학부 동물생명공학전공"
         ],
-        "image": "images/TARL.PNG"
+        "image": "images/TARL.png"
     },
     "TCMG": {
         "title": "친환경 공간·도시 디자이너",
         "desc": "인간이 살아가는 건축물과 도시 공간을 안전하고 아름답게 기획·설계합니다.",
         "depts": ["공과대학 건축공학과", "공과대학 건축학과", "공과대학 토목공학과"],
-        "image": "images/TCMG.PNG"
+        "image": "images/TCMG.png"
     },
     "TCML": {
         "title": "스마트 융합 농업 기획자",
         "desc": "첨단 IT 및 바이오 기술을 농업 및 생명 자원에 창의적으로 결합하여 미래 먹거리를 창출합니다.",
         "depts": ["생명자원과학대학 산업응용경제학과"],
-        "image": "images/TCML.PNG"
+        "image": "images/TCML.png"
     },
     "TCRG": {
         "title": "해양·지구 환경 과학자",
@@ -111,7 +111,7 @@ TYPE_INFO = {
             "해양과학대학 해양시스템공학과",
             "해양과학대학 환경공학과"
         ],
-        "image": "images/TCRG.PNG"
+        "image": "images/TCRG.png"
     },
     "TCRL": {
         "title": "코스메틱·식품 융합 연구원",
@@ -121,7 +121,7 @@ TYPE_INFO = {
             "자연과학대학 식품영양학과",
             "공과대학 식품생명공학과"
         ],
-        "image": "images/TCRL.PNG"
+        "image": "images/TCRL.png"
     }
 }
 
@@ -376,7 +376,7 @@ else:
             f"- **현재 실행 위치(PWD):** `{os.getcwd()}`\n\n"
             f"💡 **점검 사항:**\n"
             f"1. GitHub 저장소 메인 위치에 `images` 폴더가 업로드되었는지 확인하세요.\n"
-            f"2. 파일명이 `{mbti}.PNG`인지 확인하세요."
+            f"2. 파일명이 `{mbti}.png`인지 확인하세요."
         )
 
     st.info(result_data["desc"])
