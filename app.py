@@ -19,7 +19,7 @@ st.markdown("""
         margin-bottom: 4px !important;
     }
     .custom-title {
-        font-size: 30px !important;
+        font-size: 33px !important;
         font-weight: 800 !important;
         margin-top: 4px !important;
         margin-bottom: 4px !important;
