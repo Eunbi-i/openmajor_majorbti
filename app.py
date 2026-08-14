@@ -72,7 +72,7 @@ st.markdown("""
     }
     .img-center-container img {
         width: 170px !important;
-        height: 1700px !important;
+        height: 170px !important;
         object-fit: contain;
     }
 
