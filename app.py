@@ -3,6 +3,7 @@ import glob
 import re
 import base64
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 페이지 기본 설정
 st.set_page_config(
@@ -71,9 +72,16 @@ st.markdown("""
         width: 100%;
     }
     .img-center-container img {
-        width: 200px !important;
-        height: 200px !important;
+        width: 150px !important;  /* <- 이미지 가로 크기 (67줄) */
+        height: 150px !important; /* <- 이미지 세로 크기 (68줄) */
         object-fit: contain;
+    }
+
+    /* 캡처 영역 전용 배경 및 여백 스타일 */
+    #capture-area {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
     }
 
     /* 모바일 대응 성향 지표 Flexbox */
@@ -361,18 +369,18 @@ if "step" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 
-# 헤더 정보
-st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
-st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
-st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
-st.markdown("---")
-
 total_q = len(questions)
 
 # ------------------------------------
 # 1. 질문 진행 화면
 # ------------------------------------
 if st.session_state.step < total_q:
+    # 헤더 정보 (질문지 상단)
+    st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
+    st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
+    st.markdown("---")
+
     current_idx = st.session_state.step
     q_data = questions[current_idx]
     
@@ -441,14 +449,23 @@ else:
     result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
 
     st.balloons()
+
+    # 📌 캡처 영역 시작 (헤더 ~ 추천 학과)
+    st.markdown('<div id="capture-area">', unsafe_allow_html=True)
+
+    # 📌 0. 상단 헤더
+    st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
+    st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
+    st.markdown('<hr style="margin: 12px 0;">', unsafe_allow_html=True)
     
-    # 📌 1. '당신의 전공 유형은:' (18px)
+    # 📌 1. '당신의 전공 유형은:'
     st.markdown('<div class="result-sub">🎯 당신의 전공 유형은:</div>', unsafe_allow_html=True)
     
-    # 📌 2. 유형 이름 (24px)
+    # 📌 2. 유형 이름
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
-    # 📌 3. 유형 설명글 (13px)
+    # 📌 3. 유형 설명글
     st.markdown(f'<div class="result-desc-box">{result_data["desc"]}</div>', unsafe_allow_html=True)
     
     # 📌 사진 찾기
@@ -462,7 +479,7 @@ else:
             img_path = f"images/{name}"
             break
 
-    # 📌 4. 150px x 150px 크기로 이미지 완벽 중앙 정렬 출력 (base64 방식 활용)
+    # 📌 4. 이미지 출력
     if img_path:
         with open(img_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
@@ -481,10 +498,93 @@ else:
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
-    # 📌 단과대학명 제거 후 pure 학과명만 출력
+    # 📌 5. 추천 학과 출력
     clean_depts = [re.sub(r'^(사회과학대학|경상대학|인문대학|자연과학대학|해양과학대학|공과대학|생명자원과학대학)\s*', '', dept) for dept in result_data["depts"]]
     depts_str = ", ".join(clean_depts)
-    st.markdown(f"💡 **추천 학과**: {depts_str}")
+    st.markdown(f'<div style="font-size: 16px; margin-top: 12px; margin-bottom: 8px;">💡 <b>추천 학과</b>: {depts_str}</div>', unsafe_allow_html=True)
+
+    # 📌 캡처 영역 끝
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # 📌 6. [9:16 비율 이미지 캡처/다운로드 버튼] 추가 (추천 학과와 4개 영역별 성향 지표 사이)
+    components.html("""
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <div style="text-align: center; margin: 15px 0;">
+        <button id="capture-btn" style="
+            background-color: #1E3A8A;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+            transition: 0.2s;
+            width: 100%;
+        ">📸 결과 카드 저장하기 (9:16 스토리 비율)</button>
+    </div>
+
+    <script>
+    document.getElementById('capture-btn').addEventListener('click', function() {
+        const btn = this;
+        btn.innerText = "⏳ 이미지 생성 중...";
+        btn.disabled = true;
+
+        const target = window.parent.document.getElementById('capture-area');
+        if (!target) {
+            alert('캡처 대상을 찾을 수 없습니다.');
+            btn.innerText = "📸 결과 카드 저장하기 (9:16 스토리 비율)";
+            btn.disabled = false;
+            return;
+        }
+
+        html2canvas(target, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            // 9:16 비율 캔버스 생성
+            const targetAspect = 9 / 16;
+            let targetWidth = canvas.width;
+            let targetHeight = Math.round(targetWidth / targetAspect);
+
+            if (targetHeight < canvas.height) {
+                targetHeight = canvas.height;
+                targetWidth = Math.round(targetHeight * targetAspect);
+            }
+
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = targetWidth;
+            finalCanvas.height = targetHeight;
+            const ctx = finalCanvas.getContext('2d');
+
+            // 배경 흰색으로 채우기
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+            // 중앙 정렬하여 원본 이미지 그리기
+            const x = (targetWidth - canvas.width) / 2;
+            const y = (targetHeight - canvas.height) / 2;
+            ctx.drawImage(canvas, x, y);
+
+            // 다운로드 링크 생성
+            const link = document.createElement('a');
+            link.download = 'mbti_result_card.png';
+            link.href = finalCanvas.toDataURL('image/png');
+            link.click();
+
+            btn.innerText = "📸 결과 카드 저장하기 (9:16 스토리 비율)";
+            btn.disabled = false;
+        }).catch(err => {
+            console.error(err);
+            alert('캡처 생성 중 오류가 발생했습니다.');
+            btn.innerText = "📸 결과 카드 저장하기 (9:16 스토리 비율)";
+            btn.disabled = false;
+        });
+    });
+    </script>
+    """, height=70)
 
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
