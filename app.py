@@ -1,6 +1,8 @@
 import os
 import glob
+import re
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 페이지 기본 설정
 st.set_page_config(
@@ -62,6 +64,14 @@ st.markdown("""
         width: 50% !important;
         flex: 1 1 50% !important;
         min-width: 50% !important;
+    }
+
+    /* 이미지 가운데 정렬용 CSS */
+    .centered-image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 12px 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -388,13 +398,10 @@ else:
 
     pct_S = round((scores["S"] / 5) * 100)
     pct_T = 100 - pct_S
-    
     pct_A = round((scores["A"] / 5) * 100)
     pct_C = 100 - pct_A
-    
     pct_M = round((scores["M"] / 5) * 100)
     pct_R = 100 - pct_M
-    
     pct_G = round((scores["G"] / 5) * 100)
     pct_L = 100 - pct_G
 
@@ -411,30 +418,107 @@ else:
     st.markdown("### 🎯 당신의 전공 유형은:")
     st.markdown(f'<div class="result-title">✨ {result_data["title"]} ({mbti})</div>', unsafe_allow_html=True)
     
-    # 📌 요청사항 1: 캐릭터 사진 추가 축소 (width=200 지정 및 중앙 정렬)
+    # 📌 사진 찾기
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
-    img_found = False
+    img_path = None
+    for name in possible_names:
+        if os.path.exists(name):
+            img_path = name
+            break
+        elif os.path.exists(f"images/{name}"):
+            img_path = f"images/{name}"
+            break
 
-    col_l, col_m, col_r = st.columns([1, 2, 1])
-    with col_m:
-        for name in possible_names:
-            if os.path.exists(name):
-                st.image(name, width=200)
-                img_found = True
-                break
-            elif os.path.exists(f"images/{name}"):
-                st.image(f"images/{name}", width=200)
-                img_found = True
-                break
-
-    if not img_found:
+    # 📌 요청사항 1: 사진 완벽 가운데 정렬
+    if img_path:
+        st.markdown(
+            f"""
+            <div class="centered-image-container">
+                <img src="data:image/png;base64,{st.image(img_path, width=200)}" style="display:none;" />
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        # Streamlit 내장 중앙 배치
+        col_l, col_m, col_r = st.columns([1, 2, 1])
+        with col_m:
+            st.image(img_path, width=200)
+    else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
     st.info(result_data["desc"])
 
-    # 📌 요청사항 2: 유형 설명 바로 아래에 추천 학과 한 줄 표기
-    depts_str = ", ".join(result_data["depts"])
+    # 📌 요청사항 2: 단과대학명 제거 후 pure 학과명만 한 줄 출력
+    clean_depts = [re.sub(r'^(사회과학대학|경상대학|인문대학|자연과학대학|해양과학대학|공과대학|생명자원과학대학)\s*', '', dept) for dept in result_data["depts"]]
+    depts_str = ", ".join(clean_depts)
     st.markdown(f"💡 **추천 학과**: {depts_str}")
+
+    # 📌 요청사항 3: 16:9 이미지 저장 (캡처) 버튼
+    st.write("")
+    capture_html = f"""
+    <div style="text-align: center; margin: 15px 0;">
+        <button id="downloadBtn" style="
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+        ">📸 MBTI 결과 16:9 이미지로 저장하기</button>
+    </div>
+
+    <!-- 16:9 비율의 숨겨진 결과 캡처용 카드 -->
+    <div id="captureCard" style="
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        width: 1280px;
+        height: 720px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 40px;
+        box-sizing: border-box;
+        font-family: 'Malgun Gothic', sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-radius: 16px;
+    ">
+        <div style="text-align: center;">
+            <p style="font-size: 20px; color: #d0e1fd; margin: 0;">제주대학교 글로벌자율학부 전공탐색 MBTI</p>
+            <h1 style="font-size: 42px; font-weight: 800; margin: 10px 0; color: #ffffff;">✨ {result_data["title"]} ({mbti})</h1>
+        </div>
+        
+        <div style="background: rgba(255, 255, 255, 0.15); padding: 30px; border-radius: 12px; backdrop-filter: blur(5px);">
+            <p style="font-size: 24px; line-height: 1.5; margin-bottom: 20px; color: #f0f8ff;">"{result_data["desc"]}"</p>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.3); margin: 15px 0;">
+            <p style="font-size: 26px; font-weight: bold; color: #ffeb3b; margin: 0;">💡 추천 학과: {depts_str}</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 18px; color: #e0e0e0;">
+            <span>🏫 제주대학교 자유전공</span>
+            <span>📸 Instagram: @jnu_start_2026</span>
+        </div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {{
+            const card = document.getElementById('captureCard');
+            html2canvas(card, {{ scale: 2 }}).then(canvas => {{
+                const link = document.createElement('a');
+                link.download = '제주대_자유전공_MBTI_결과_{mbti}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }});
+        }});
+    </script>
+    """
+    components.html(capture_html, height=75)
 
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
