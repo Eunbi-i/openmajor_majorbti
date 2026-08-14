@@ -450,7 +450,7 @@ else:
     # 📌 4. 사진 크기 약 50% 축소 및 완벽 가운데 정렬
     if img_path:
         # 좌우 여백 비율을 넓혀서 중앙 이미지를 아담하게 줄임
-        col_l, col_m, col_r = st.columns([1.5, 1, 1.5])
+        col_l, col_m, col_r = st.columns([1.5, 2, 1.5])
         with col_m:
             st.image(img_path, use_container_width=True)
     else:
