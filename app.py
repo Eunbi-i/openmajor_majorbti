@@ -2,8 +2,9 @@ import os
 import glob
 import re
 import base64
+import io
 import streamlit as st
-import streamlit.components.v1 as components
+from PIL import Image, ImageDraw, ImageFont
 
 # 페이지 기본 설정
 st.set_page_config(
@@ -34,7 +35,7 @@ st.markdown("""
         margin-bottom: 16px !important;
     }
     
-    /* 결과 상단 소제목 (당신의 전공 유형은) -> 18px (2pt 축소) */
+    /* 결과 상단 소제목 (당신의 전공 유형은) */
     .result-sub {
         font-size: 18px !important;
         font-weight: 600 !important;
@@ -42,7 +43,7 @@ st.markdown("""
         margin-bottom: 4px !important;
     }
 
-    /* 결과 제목 스타일 (유형 이름) -> 24px (2pt 확대) */
+    /* 결과 제목 스타일 (유형 이름) */
     .result-title {
         font-size: 24px !important;
         font-weight: 800 !important;
@@ -51,7 +52,7 @@ st.markdown("""
         color: #1E3A8A;
     }
 
-    /* 유형 설명글 스타일 -> 13px (1pt 축소) */
+    /* 유형 설명글 스타일 */
     .result-desc-box {
         font-size: 13px !important;
         line-height: 1.5 !important;
@@ -72,16 +73,9 @@ st.markdown("""
         width: 100%;
     }
     .img-center-container img {
-        width: 150px !important;  /* <- 이미지 가로 크기 (67줄) */
-        height: 150px !important; /* <- 이미지 세로 크기 (68줄) */
+        width: 150px !important;
+        height: 150px !important;
         object-fit: contain;
-    }
-
-    /* 캡처 영역 전용 배경 및 여백 스타일 */
-    #capture-area {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
     }
 
     /* 모바일 대응 성향 지표 Flexbox */
@@ -214,154 +208,113 @@ TYPE_INFO = {
 
 # 20개 질문 문항
 questions = [
-    # [S vs T] (1~5)
-    {
-        "question": "Q1. 뉴스나 유튜브 알고리즘에 주로 떠오르는 관심 영상은?",
-        "options": [
-            ("요즘 핫한 이슈, 사회적 사건, 사람들의 심리나 문화 트렌드", "S"),
-            ("최신 IT 기기 리뷰, 과학 신기술, 우주/자연 현상의 비밀", "T")
-        ]
-    },
-    {
-        "question": "Q2. 해결해보고 싶은 지구적/사회적 과제는?",
-        "options": [
-            ("빈부격차, 국가 간 갈등, 문화적 소외, 사회 안전망 구축", "S"),
-            ("기후 변화, 신종 질병 치료제 개발, 에너지 부족, AI 기술 윤리", "T")
-        ]
-    },
-    {
-        "question": "Q3. 학창 시절 상대적으로 흥미를 느꼈던 수업 시간에 가까운 것은?",
-        "options": [
-            ("국어, 사회, 역사, 외국어 등 사람과 사회를 배우는 시간", "S"),
-            ("수학, 물리학, 화학, 지구과학, 정보 등 원리와 공식을 배우는 시간", "T")
-        ]
-    },
-    {
-        "question": "Q4. 영화나 드라마를 볼 때 나도 모르게 더 집중하게 되는 부분은?",
-        "options": [
-            ("등장인물 간의 관계, 감정선, 사회적 메시지와 대사", "S"),
-            ("세계관의 설정, 과학적/기술적 고증, 사건의 논리적 개연성", "T")
-        ]
-    },
-    {
-        "question": "Q5. 친구들과 대화할 때 더 즐거운 주제는?",
-        "options": [
-            ("최근 유행하는 밈, 연예/문화 이야기, 서로의 근황과 고민 상담", "S"),
-            ("게임 메커니즘, 새로 나온 가전/IT 제품, 신기한 과학적 퀴즈", "T")
-        ]
-    },
-
-    # [A vs C] (6~10)
-    {
-        "question": "Q6. 새로운 과제나 프로젝트를 시작할 때 나의 행동 방식은?",
-        "options": [
-            ("관련 자료, 기존 데이터, 성공 사례부터 철저히 분석하고 계획을 세운다.", "A"),
-            ("일단 참신한 아이디어를 빠르게 떠올리고 즉시 시도해 보며 수정해 나간다.", "C")
-        ]
-    },
-    {
-        "question": "Q7. 내 주장을 다른 사람에게 설득할 때 가장 강력하다고 믿는 무기는?",
-        "options": [
-            ("객관적인 통계 수치, 논리적 근거, 잘 정리된 데이터", "A"),
-            ("와닿는 예시, 직관적인 시각 자료, 참신하고 창의적인 아이디어", "C")
-        ]
-    },
-    {
-        "question": "Q8. 시험이나 과제를 준비할 때 나의 공부 스타일은?",
-        "options": [
-            ("개념의 체계와 기본 원리를 뿌리부터 정석대로 이해하는 편이다.", "A"),
-            ("기출문제를 많이 풀면서 실전에 바로 적용하는 방식을 선호한다.", "C")
-        ]
-    },
-    {
-        "question": "Q9. 조별 과제를 할 때 내가 더 맡고 싶은 역할은?",
-        "options": [
-            ("자료 조사, 통계 분석, 전체적인 논리 흐름과 목차 잡기", "A"),
-            ("PPT 발표 자료 디자인, 아이디어 회의 주도, 발표 연출하기", "C")
-        ]
-    },
-    {
-        "question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?",
-        "options": [
-            ("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간다.", "A"),
-            ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")
-        ]
-    },
-
-    # [M vs R] (11~15)
-    {
-        "question": "Q11. 내가 생각하는 학문과 공부의 궁극적인 목적은?",
-        "options": [
-            ("거시적인 시스템, 조직, 사회적 구조를 효율적으로 운영하고 관리하는 것", "M"),
-            ("세상이나 생명체, 인간의 근본적인 원리와 본질을 깊이 있게 밝혀내는 것", "R")
-        ]
-    },
-    {
-        "question": "Q12. 팀을 이루어 일할 때 더 자신 있는 내 모습은?",
-        "options": [
-            ("전체 일정, 역할 분담, 자원 배분을 총괄하는 '시스템 관리자'", "M"),
-            ("한 가지 세부 주제를 맡아 깊이 있게 파고드는 '전문 탐구자'", "R")
-        ]
-    },
-    {
-        "question": "Q13. 연구하거나 배워보고 싶은 대상에 더 가까운 것은?",
-        "options": [
-            ("기업, 국가, 법률, 시장, 기술 인프라 등 인간이 구축한 거시 시스템", "M"),
-            ("자연 현상, 인간의 마음, 언어의 역사, 유전자 등 근본적으로 존재하는 대상", "R")
-        ]
-    },
-    {
-        "question": "Q14. 도서관이나 서점에 갔을 때 더 눈길이 가는 책의 종류는?",
-        "options": [
-            ("경영 전략, 트렌드 분석, 행정/정치, 리더십 관련 책", "M"),
-            ("기초 과학, 철학, 역사적 사색, 생명과학 전문 서적", "R")
-        ]
-    },
-    {
-        "question": "Q15. 성과를 이루었을 때 더 큰 보람을 느끼는 순간은?",
-        "options": [
-            ("내가 기획하거나 관리한 시스템/조직이 원활하게 잘 돌아갈 때", "M"),
-            ("아무도 밝혀내지 못한 새로운 사실이나 깊이 있는 원리를 깨달았을 때", "R")
-        ]
-    },
-
-    # [G vs L] (16~20)
-    {
-        "question": "Q16. 미래에 내가 일하고 싶은 무대나 환경은?",
-        "options": [
-            ("글로벌 시장, 국제기구, 공공기관 등 넓은 범주에 영향력을 미치는 곳", "G"),
-            ("특정 전문 기술이나 독보적인 산업 분야에서 최고의 전문가로 인정받는 곳", "L")
-        ]
-    },
-    {
-        "question": "Q17. 수강신청을 할 때 선호하는 과목의 스타일은?",
-        "options": [
-            ("인문, 사회, 경제 등 폭넓은 통찰력과 통섭적 시야를 길러주는 과목", "G"),
-            ("특정 기계, 바이오, 화학, 실무 툴 등 뾰족한 기술과 전문 지식을 배우는 과목", "L")
-        ]
-    },
-    {
-        "question": "Q18. 내가 더 가치 있게 생각하는 나의 능력은?",
-        "options": [
-            ("다양한 분야를 연결하고 세상 전체의 흐름을 읽는 '넓은 시야'", "G"),
-            ("한 분야의 기술이나 지식을 누구보다 깊게 다루는 '독보적 전문성'", "L")
-        ]
-    },
-    {
-        "question": "Q19. 어떤 일을 할 때 더 만족감을 느끼는가?",
-        "options": [
-            ("불특정 다수의 많은 사람들과 사회 전체에 긍정적 영향력을 줄 때", "G"),
-            ("눈앞의 구체적인 문제나 기계/제품/기술을 완벽하게 해결하고 완성할 때", "L")
-        ]
-    },
-    {
-        "question": "Q20. 나를 표현하는 단어로 더 마음에 드는 것은?",
-        "options": [
-            ("시대를 읽고 세상을 연결하는 '글로벌 융합형 통섭가'", "G"),
-            ("자신만의 영역이 확실한 '스페셜리스트(Specialist)'", "L")
-        ]
-    }
+    {"question": "Q1. 뉴스나 유튜브 알고리즘에 주로 떠오르는 관심 영상은?", "options": [("요즘 핫한 이슈, 사회적 사건, 사람들의 심리나 문화 트렌드", "S"), ("최신 IT 기기 리뷰, 과학 신기술, 우주/자연 현상의 비밀", "T")]},
+    {"question": "Q2. 해결해보고 싶은 지구적/사회적 과제는?", "options": [("빈부격차, 국가 간 갈등, 문화적 소외, 사회 안전망 구축", "S"), ("기후 변화, 신종 질병 치료제 개발, 에너지 부족, AI 기술 윤리", "T")]},
+    {"question": "Q3. 학창 시절 상대적으로 흥미를 느꼈던 수업 시간에 가까운 것은?", "options": [("국어, 사회, 역사, 외국어 등 사람과 사회를 배우는 시간", "S"), ("수학, 물리학, 화학, 지구과학, 정보 등 원리와 공식을 배우는 시간", "T")]},
+    {"question": "Q4. 영화나 드라마를 볼 때 나도 모르게 더 집중하게 되는 부분은?", "options": [("등장인물 간의 관계, 감정선, 사회적 메시지와 대사", "S"), ("세계관의 설정, 과학적/기술적 고증, 사건의 논리적 개연성", "T")]},
+    {"question": "Q5. 친구들과 대화할 때 더 즐거운 주제는?", "options": [("최근 유행하는 밈, 연예/문화 이야기, 서로의 근황과 고민 상담", "S"), ("게임 메커니즘, 새로 나온 가전/IT 제품, 신기한 과학적 퀴즈", "T")]},
+    {"question": "Q6. 새로운 과제나 프로젝트를 시작할 때 나의 행동 방식은?", "options": [("관련 자료, 기존 데이터, 성공 사례부터 철저히 분석하고 계획을 세운다.", "A"), ("일단 참신한 아이디어를 빠르게 떠올리고 즉시 시도해 보며 수정해 나간다.", "C")]},
+    {"question": "Q7. 내 주장을 다른 사람에게 설득할 때 가장 강력하다고 믿는 무기는?", "options": [("객관적인 통계 수치, 논리적 근거, 잘 정리된 데이터", "A"), ("와닿는 예시, 직관적인 시각 자료, 참신하고 창의적인 아이디어", "C")]},
+    {"question": "Q8. 시험이나 과제를 준비할 때 나의 공부 스타일은?", "options": [("개념의 체계와 기본 원리를 뿌리부터 정석대로 이해하는 편이다.", "A"), ("기출문제를 많이 풀면서 실전에 바로 적용하는 방식을 선호한다.", "C")]},
+    {"question": "Q9. 조별 과제를 할 때 내가 더 맡고 싶은 역할은?", "options": [("자료 조사, 통계 분석, 전체적인 논리 흐름과 목차 잡기", "A"), ("PPT 발표 자료 디자인, 아이디어 회의 주도, 발표 연출하기", "C")]},
+    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
+    {"question": "Q11. 내가 생각하는 학문과 공부의 궁극적인 목적은?", "options": [("거시적인 시스템, 조직, 사회적 구조를 효율적으로 운영하고 관리하는 것", "M"), ("세상이나 생명체, 인간의 근본적인 원리와 본질을 깊이 있게 밝혀내는 것", "R")]},
+    {"question": "Q12. 팀을 이루어 일할 때 더 자신 있는 내 모습은?", "options": [("전체 일정, 역할 분담, 자원 배분을 총괄하는 '시스템 관리자'", "M"), ("한 가지 세부 주제를 맡아 깊이 있게 파고드는 '전문 탐구자'", "R")]},
+    {"question": "Q13. 연구하거나 배워보고 싶은 대상에 더 가까운 것은?", "options": [("기업, 국가, 법률, 시장, 기술 인프라 등 인간이 구축한 거시 시스템", "M"), ("자연 현상, 인간의 마음, 언어의 역사, 유전자 등 근본적으로 존재하는 대상", "R")]},
+    {"question": "Q14. 도서관이나 서점에 갔을 때 더 눈길이 가는 책의 종류는?", "options": [("경영 전략, 트렌드 분석, 행정/정치, 리더십 관련 책", "M"), ("기초 과학, 철학, 역사적 사색, 생명과학 전문 서적", "R")]},
+    {"question": "Q15. 성과를 이루었을 때 더 큰 보람을 느끼는 순간은?", "options": [("내가 기획하거나 관리한 시스템/조직이 원활하게 잘 돌아갈 때", "M"), ("아무도 밝혀내지 못한 새로운 사실이나 깊이 있는 원리를 깨달았을 때", "R")]},
+    {"question": "Q16. 미래에 내가 일하고 싶은 무대나 환경은?", "options": [("글로벌 시장, 국제기구, 공공기관 등 넓은 범주에 영향력을 미치는 곳", "G"), ("특정 전문 기술이나 독보적인 산업 분야에서 최고의 전문가로 인정받는 곳", "L")]},
+    {"question": "Q17. 수강신청을 할 때 선호하는 과목의 스타일은?", "options": [("인문, 사회, 경제 등 폭넓은 통찰력과 통섭적 시야를 길러주는 과목", "G"), ("특정 기계, 바이오, 화학, 실무 툴 등 뾰족한 기술과 전문 지식을 배우는 과목", "L")]},
+    {"question": "Q18. 내가 더 가치 있게 생각하는 나의 능력은?", "options": [("다양한 분야를 연결하고 세상 전체의 흐름을 읽는 '넓은 시야'", "G"), ("한 분야의 기술이나 지식을 누구보다 깊게 다루는 '독보적 전문성'", "L")]},
+    {"question": "Q19. 어떤 일을 할 때 더 만족감을 느끼는가?", "options": [("불특정 다수의 많은 사람들과 사회 전체에 긍정적 영향력을 줄 때", "G"), ("눈앞의 구체적인 문제나 기계/제품/기술을 완벽하게 해결하고 완성할 때", "L")]},
+    {"question": "Q20. 나를 표현하는 단어로 더 마음에 드는 것은?", "options": [("시대를 읽고 세상을 연결하는 '글로벌 융합형 통섭가'", "G"), ("자신만의 영역이 확실한 '스페셜리스트(Specialist)'", "L")]}
 ]
+
+# 🖼️ 9:16 이미지 카드 생성 함수 (Pillow)
+def generate_916_card(mbti, title, desc, depts_str, img_path):
+    width, height = 1080, 1920 # 9:16 카드 크기
+    image = Image.new("RGB", (width, height), "#FFFFFF")
+    draw = ImageDraw.Draw(image)
+
+    # 폰트 설정 (기본 폰트 사용 / 한글 지원 시스템 폰트)
+    def load_font(size):
+        font_paths = [
+            "C:/Windows/Fonts/malgun.ttf", # Windows 맑은 고딕
+            "/System/Library/Fonts/Supplemental/AppleGothic.ttf", # Mac
+            "/usr/share/fonts/truetype/nanum/NanumGothic.ttf" # Linux
+        ]
+        for font_p in font_paths:
+            if os.path.exists(font_p):
+                return ImageFont.truetype(font_p, size)
+        return ImageFont.load_default()
+
+    font_sub = load_font(32)
+    font_title = load_font(52)
+    font_mbti = load_font(60)
+    font_desc = load_font(36)
+    font_dept_title = load_font(38)
+    font_dept = load_font(34)
+
+    # 1. 헤더
+    draw.text((80, 120), "제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험", fill="#A0A0A0", font=font_sub)
+    draw.text((80, 170), "🎓 전공탐색 MBTI TEST", fill="#111827", font=font_title)
+    draw.text((80, 245), "개인 맞춤형 전공 탐색 및 추천 프로그램", fill="#808080", font=font_sub)
+    draw.line([(80, 310), (width - 80, 310)], fill="#E5E7EB", width=3)
+
+    # 2. 전공 유형
+    draw.text((80, 360), "🎯 당신의 전공 유형은:", fill="#374151", font=font_sub)
+    draw.text((80, 420), f"✨ {title} ({mbti})", fill="#1E3A8A", font=font_mbti)
+
+    # 3. 설명 박스
+    draw.rectangle([(80, 520), (width - 80, 680)], fill="#F0F9FF", outline="#0284C7", width=3)
+    
+    # 설명문 줄바꿈 처리
+    words = desc.split(' ')
+    lines, current_line = [], ""
+    for word in words:
+        if len(current_line + word) > 28:
+            lines.append(current_line)
+            current_line = word + " "
+        else:
+            current_line += word + " "
+    lines.append(current_line)
+    
+    y_text = 550
+    for line in lines:
+        draw.text((110, y_text), line.strip(), fill="#0C4A6E", font=font_desc)
+        y_text += 50
+
+    # 4. 캐릭터 이미지 배치 (중앙)
+    if img_path and os.path.exists(img_path):
+        char_img = Image.open(img_path).convert("RGBA")
+        char_img = char_img.resize((500, 500), Image.Resampling.LANCZOS)
+        # alpha mask 처리
+        image.paste(char_img, ((width - 500) // 2, 730), char_img)
+
+    # 5. 추천 학과
+    draw.text((80, 1300), "💡 추천 학과:", fill="#111827", font=font_dept_title)
+    
+    # 추천 학과 줄바꿈 처리
+    dept_lines, current_dept = [], ""
+    for dept in depts_str.split(', '):
+        if len(current_dept + dept) > 22:
+            dept_lines.append(current_dept)
+            current_dept = dept + ", "
+        else:
+            current_dept += dept + ", "
+    if current_dept:
+        dept_lines.append(current_dept.rstrip(", "))
+        
+    y_dept = 1360
+    for line in dept_lines:
+        draw.text((80, y_dept), line, fill="#4B5563", font=font_dept)
+        y_dept += 50
+
+    # 바이트 버퍼로 저장
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    return buf.getvalue()
+
 
 # 세션 상태 초기화
 if "step" not in st.session_state:
@@ -375,7 +328,6 @@ total_q = len(questions)
 # 1. 질문 진행 화면
 # ------------------------------------
 if st.session_state.step < total_q:
-    # 헤더 정보 (질문지 상단)
     st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
     st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
     st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
@@ -404,17 +356,12 @@ if st.session_state.step < total_q:
             st.rerun()
 
     st.write("")
-    
     col1, col2 = st.columns(2)
-    
     with col1:
         if current_idx > 0:
             if st.button("⬅️ 이전 질문", use_container_width=True):
                 st.session_state.step -= 1
                 st.rerun()
-        else:
-            st.write("")
-
     with col2:
         btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
         if st.button(btn_label, use_container_width=True):
@@ -426,7 +373,6 @@ if st.session_state.step < total_q:
 # ------------------------------------
 else:
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
-    
     for i, ans_idx in st.session_state.answers.items():
         code = questions[i]["options"][ans_idx][1]
         scores[code] += 1
@@ -447,11 +393,7 @@ else:
     mbti += "G" if scores["G"] >= scores["L"] else "L"
 
     result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
-
     st.balloons()
-
-    # 📌 캡처 영역 시작 (헤더 ~ 추천 학과)
-    st.markdown('<div id="capture-area">', unsafe_allow_html=True)
 
     # 📌 0. 상단 헤더
     st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
@@ -503,88 +445,17 @@ else:
     depts_str = ", ".join(clean_depts)
     st.markdown(f'<div style="font-size: 16px; margin-top: 12px; margin-bottom: 8px;">💡 <b>추천 학과</b>: {depts_str}</div>', unsafe_allow_html=True)
 
-    # 📌 캡처 영역 끝
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # 📌 6. [9:16 비율 이미지 캡처/다운로드 버튼] 추가 (추천 학과와 4개 영역별 성향 지표 사이)
-    components.html("""
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <div style="text-align: center; margin: 15px 0;">
-        <button id="capture-btn" style="
-            background-color: #1E3A8A;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
-            transition: 0.2s;
-            width: 100%;
-        ">📸 결과 카드 저장하기 (9:16 스토리 비율)</button>
-    </div>
-
-    <script>
-    document.getElementById('capture-btn').addEventListener('click', function() {
-        const btn = this;
-        btn.innerText = "⏳ 이미지 생성 중...";
-        btn.disabled = true;
-
-        const target = window.parent.document.getElementById('capture-area');
-        if (!target) {
-            alert('캡처 대상을 찾을 수 없습니다.');
-            btn.innerText = "📸 결과 카드 저장하기 (9:16 스토리 비율)";
-            btn.disabled = false;
-            return;
-        }
-
-        html2canvas(target, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff'
-        }).then(canvas => {
-            // 9:16 비율 캔버스 생성
-            const targetAspect = 9 / 16;
-            let targetWidth = canvas.width;
-            let targetHeight = Math.round(targetWidth / targetAspect);
-
-            if (targetHeight < canvas.height) {
-                targetHeight = canvas.height;
-                targetWidth = Math.round(targetHeight * targetAspect);
-            }
-
-            const finalCanvas = document.createElement('canvas');
-            finalCanvas.width = targetWidth;
-            finalCanvas.height = targetHeight;
-            const ctx = finalCanvas.getContext('2d');
-
-            // 배경 흰색으로 채우기
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, targetWidth, targetHeight);
-
-            // 중앙 정렬하여 원본 이미지 그리기
-            const x = (targetWidth - canvas.width) / 2;
-            const y = (targetHeight - canvas.height) / 2;
-            ctx.drawImage(canvas, x, y);
-
-            // 다운로드 링크 생성
-            const link = document.createElement('a');
-            link.download = 'mbti_result_card.png';
-            link.href = finalCanvas.toDataURL('image/png');
-            link.click();
-
-            btn.innerText = "📸 결과 카드 저장하기 (9:16 스토리 비율)";
-            btn.disabled = false;
-        }).catch(err => {
-            console.error(err);
-            alert('캡처 생성 중 오류가 발생했습니다.');
-            btn.innerText = "📸 결과 카드 저장하기 (9:16 스토리 비율)";
-            btn.disabled = false;
-        });
-    });
-    </script>
-    """, height=70)
+    # 📌 6. [9:16 비율 이미지 생성 및 다운로드 버튼] (추천 학과와 성향지표 사이)
+    card_bytes = generate_916_card(mbti, result_data["title"], result_data["desc"], depts_str, img_path)
+    
+    st.download_button(
+        label="📸 결과 카드 저장하기 (9:16 스토리 비율)",
+        data=card_bytes,
+        file_name=f"{mbti}_result_card.png",
+        mime="image/png",
+        use_container_width=True,
+        type="primary"
+    )
 
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
