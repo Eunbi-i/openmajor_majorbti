@@ -30,7 +30,7 @@ st.markdown("""
     .header-sub2 {
         font-size: 14px !important;
         color: #808080 !important;
-        margin-bottom: 4px !important; /* 💡 빈칸(여백)을 16px -> 4px로 축소 */
+        margin-bottom: 4px !important;
     }
     
     /* 질문 글씨 크기 스타일 */
@@ -104,11 +104,18 @@ st.markdown("""
         text-align: right;
     }
 
-    /* 모바일에서도 버튼 2개가 가로로 50%씩 고정되도록 설정 */
-    div[data-testid="column"] {
+    /* 💡 [핵심 수정] 스마트폰(모바일)에서도 강제로 가로 1줄(50%씩) 유지하는 CSS */
+    div[data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         width: 50% !important;
-        flex: 1 1 50% !important;
         min-width: 50% !important;
+        flex: 1 1 50% !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -225,7 +232,7 @@ questions = [
     {"question": "Q7. 내 주장을 다른 사람에게 설득할 때 가장 강력하다고 믿는 무기는?", "options": [("객관적인 통계 수치, 논리적 근거, 잘 정리된 데이터", "A"), ("와닿는 예시, 직관적인 시각 자료, 참신하고 창의적인 아이디어", "C")]},
     {"question": "Q8. 시험이나 과제를 준비할 때 나의 공부 스타일은?", "options": [("개념의 체계와 기본 원리를 뿌리부터 정석대로 이해하는 편이다.", "A"), ("기출문제를 많이 풀면서 실전에 바로 적용하는 방식을 선호한다.", "C")]},
     {"question": "Q9. 조별 과제를 할 때 내가 더 맡고 싶은 역할은?", "options": [("자료 조사, 통계 분석, 전체적인 논리 흐름과 목차 잡기", "A"), ("PPT 발표 자료 디자인, 아이디어 회의 주도, 발표 연출하기", "C")]},
-    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간의다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
+    {"question": "Q10. 예상치 못한 문제나 오류에 부딪혔을 때 나의 반응은?", "options": [("원인이 무엇인지 순서대로 차근차근 점검하며 논리적으로 풀어간다.", "A"), ("기존 틀을 벗어나 직관적이고 새로운 방식으로 대안을 찾아낸다.", "C")]},
     {"question": "Q11. 내가 생각하는 학문과 공부의 궁극적인 목적은?", "options": [("거시적인 시스템, 조직, 사회적 구조를 효율적으로 운영하고 관리하는 것", "M"), ("세상이나 생명체, 인간의 근본적인 원리와 본질을 깊이 있게 밝혀내는 것", "R")]},
     {"question": "Q12. 팀을 이루어 일할 때 더 자신 있는 내 모습은?", "options": [("전체 일정, 역할 분담, 자원 배분을 총괄하는 '시스템 관리자'", "M"), ("한 가지 세부 주제를 맡아 깊이 있게 파고드는 '전문 탐구자'", "R")]},
     {"question": "Q13. 연구하거나 배워보고 싶은 대상에 더 가까운 것은?", "options": [("기업, 국가, 법률, 시장, 기술 인프라 등 인간이 구축한 거시 시스템", "M"), ("자연 현상, 인간의 마음, 언어의 역사, 유전자 등 근본적으로 존재하는 대상", "R")]},
@@ -253,8 +260,6 @@ if st.session_state.step < total_q:
     st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
     st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
     st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
-    
-    # 💡 구분선 여백 축소 적용
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
 
     current_idx = st.session_state.step
@@ -280,14 +285,20 @@ if st.session_state.step < total_q:
             st.rerun()
 
     st.write("")
+    
+    # 💡 이전/다음 버튼 50% 분할
     col1, col2 = st.columns(2)
+    
     with col1:
         if current_idx > 0:
             if st.button("⬅️ 이전 질문", use_container_width=True):
                 st.session_state.step -= 1
                 st.rerun()
+        else:
+            st.empty()
+            
     with col2:
-        btn_label = "🔥 결과 확인하기" if current_idx == total_q - 1 else "다음 질문 ➡️"
+        btn_label = "🔥 결과 확인" if current_idx == total_q - 1 else "다음 질문 ➡️"
         if st.button(btn_label, use_container_width=True):
             st.session_state.step += 1
             st.rerun()
@@ -319,12 +330,9 @@ else:
     result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
     st.balloons()
 
-    # 상단 헤더
     st.markdown('<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>', unsafe_allow_html=True)
     st.markdown('<div class="custom-title">🎓 전공탐색 MBTI TEST</div>', unsafe_allow_html=True)
     st.markdown('<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>', unsafe_allow_html=True)
-    
-    # 💡 구분선 여백 축소 적용
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
     
     st.markdown('<div class="result-sub">🎯 당신의 전공 유형은:</div>', unsafe_allow_html=True)
