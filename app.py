@@ -104,14 +104,14 @@ st.markdown("""
         text-align: right;
     }
 
-    /* 🎯 [여기서 간격을 조절합니다 - Line 80~88] */
+    /* 💡 [수정] 모바일 1줄 유지 레이아웃 */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        gap: 16px !important;              /* 👈 버튼 사이 간격 (필요시 10px 등으로 축소 가능) */
+        gap: 8px !important;
         width: 100% !important;
-        justify-content: center !important; /* 👈 space-between 대신 center로 정렬하여 중앙으로 모음 */
+        justify-content: space-between !important;
     }
     
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
@@ -121,19 +121,20 @@ st.markdown("""
         display: flex !important;
     }
 
-    /* 왼쪽 컬럼(이전 버튼) 정렬 - 오른쪽 밀착으로 간격 축소 */
+    /* 왼쪽 컬럼(이전 버튼) 정렬 */
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        justify-content: flex-end !important;
-    }
-    /* 오른쪽 컬럼(다음 버튼) 정렬 - 왼쪽 밀착으로 간격 축소 */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
         justify-content: flex-start !important;
     }
+    /* 오른쪽 컬럼(다음 버튼) 정렬 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+        justify-content: flex-end !important;
+    }
 
-    /* 이전/다음 버튼 사각형 가로 길이 및 디자인 유지 */
+    /* 💡 [핵심 추가] 이전/다음 버튼 사각형 가로 길이 줄이기 (최대 140px 제한 및 여백 조정) */
     div[data-testid="stHorizontalBlock"] button {
         max-width: 140px !important;
-        width: 100% !important;
+        width: auto !important;
+        min-width: 110px !important;
         padding-left: 12px !important;
         padding-right: 12px !important;
         font-size: 14px !important;
