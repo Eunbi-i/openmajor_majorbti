@@ -114,7 +114,7 @@ st.markdown(
            - 'space-between': 왼쪽 끝과 오른쪽 끝으로 벌림
            - 'flex-start': 왼쪽에 붙임
         */
-        justify-content: space-between !important; 
+        justify-content: center !important; 
     }
     
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
