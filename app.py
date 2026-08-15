@@ -7,7 +7,7 @@ import streamlit as st
 # 페이지 기본 설정
 st.set_page_config(page_title="전공탐색 MBTI", page_icon="🎓", layout="centered")
 
-# 🎨 디자인 커스텀 CSS (버튼 및 링크 Hover 스타일 개선)
+# 🎨 디자인 커스텀 CSS (버튼 스타일 및 링크 버튼 완전 고정)
 st.markdown(
     """
 <style>
@@ -58,10 +58,10 @@ st.markdown(
     }
 
     /* ---------------------------------------------------- */
-    /* 🔘 일반 버튼 & 링크 버튼 스타일 (기본: 밝음 -> 커서 올릴 때: 어두움) */
+    /* 🔘 일반 버튼 & 링크 버튼 스타일 완전 고정 */
     /* ---------------------------------------------------- */
 
-    /* 1. 일반 버튼 및 st.link_button 기본 스타일 (밝은 배경) */
+    /* 1. 일반 버튼 및 st.link_button 기본 스타일 */
     div.stButton > button[kind="secondary"],
     div.stButton > button:not([kind="primary"]),
     a[data-testid="stLinkButton"] {
@@ -83,7 +83,7 @@ st.markdown(
         transition: all 0.2s ease;
     }
 
-    /* 2. 일반 버튼 및 링크 버튼 Hover / Focus / Active (어두운 배경 전환) */
+    /* 일반 버튼 및 링크 버튼 Hover / Focus / Active */
     div.stButton > button[kind="secondary"]:hover,
     div.stButton > button[kind="secondary"]:focus,
     div.stButton > button[kind="secondary"]:active,
@@ -93,17 +93,17 @@ st.markdown(
     a[data-testid="stLinkButton"]:hover,
     a[data-testid="stLinkButton"]:focus,
     a[data-testid="stLinkButton"]:active {
-        background-color: #334155 !important;
-        color: #FFFFFF !important;
-        border-color: #334155 !important;
+        background-color: #E2E8F0 !important;
+        color: #0F172A !important;
+        border-color: #94A3B8 !important;
         box-shadow: none !important;
     }
 
-    /* 3. 선택된 버튼 (Primary) */
+    /* 2. 선택된 버튼 및 강조 버튼 (Primary) */
     div.stButton > button[kind="primary"] {
-        background-color: #2563EB !important;
+        background-color: #FF4B4B !important;
         color: #FFFFFF !important;
-        border: 1px solid #2563EB !important;
+        border: 1px solid #FF4B4B !important;
         border-radius: 8px !important;
         min-height: 56px !important;
         display: flex !important;
@@ -118,13 +118,13 @@ st.markdown(
         transition: all 0.2s ease;
     }
 
-    /* 선택된 버튼 Hover */
+    /* 강조 버튼 Hover / Focus / Active */
     div.stButton > button[kind="primary"]:hover,
     div.stButton > button[kind="primary"]:focus,
     div.stButton > button[kind="primary"]:active {
-        background-color: #1D4ED8 !important;
+        background-color: #E03E3E !important;
         color: #FFFFFF !important;
-        border-color: #1D4ED8 !important;
+        border-color: #E03E3E !important;
         box-shadow: none !important;
     }
 
@@ -606,19 +606,7 @@ def get_image_base64_html(code, is_small=False):
         """
     return ""
 
-# 스크롤을 최상단으로 올리는 JS 함수
-def scroll_to_top():
-    st.markdown(
-        """
-        <script>
-            window.scrollTo({top: 0, behavior: 'smooth'});
-            parent.window.scrollTo({top: 0, behavior: 'smooth'});
-        </script>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# 세션 상태 초기화
+# 세션 상태 초기화 (-1: 시작페이지, 0~19: 질문, 20: 결과, 99: 모든 유형 모아보기)
 if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
@@ -632,7 +620,6 @@ total_q = len(questions)
 # 0. 시작 안내 화면 (커버 페이지)
 # ------------------------------------
 if st.session_state.step == -1:
-    scroll_to_top()
     st.markdown(
         '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
         unsafe_allow_html=True,
@@ -684,7 +671,6 @@ if st.session_state.step == -1:
 # 1. 질문 진행 화면
 # ------------------------------------
 elif st.session_state.step < total_q:
-    scroll_to_top()
     st.markdown(
         '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
         unsafe_allow_html=True,
@@ -755,13 +741,11 @@ elif st.session_state.step < total_q:
 # 2. 결과 출력 화면
 # ------------------------------------
 elif st.session_state.step == total_q:
-    scroll_to_top()
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
     for i, ans_idx in st.session_state.answers.items():
         code = questions[i]["options"][ans_idx][1]
         scores[code] += 1
 
-    # 지수 정상 계산 (각 영역 5문항 기준 백분율)
     pct_S = round((scores["S"] / 5) * 100)
     pct_T = 100 - pct_S
     pct_A = round((scores["A"] / 5) * 100)
@@ -830,7 +814,6 @@ elif st.session_state.step == total_q:
         unsafe_allow_html=True,
     )
 
-    # 4개 영역별 성향 지수 정상 렌더링
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
     st.caption("선택하신 답변을 바탕으로 한 영역별 비율입니다.")
@@ -888,6 +871,7 @@ elif st.session_state.step == total_q:
     st.markdown("---")
     st.markdown("### 🔗 제주대학교 관련 링크")
 
+    # 세로(1열) 정렬 및 단과대학 링크 삭제
     st.link_button(
         "📸 2026 자유전공 인스타그램",
         "https://www.instagram.com/jnu_start_2026?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
@@ -908,7 +892,6 @@ elif st.session_state.step == total_q:
 # 3. 모든 유형 모아보기 페이지 (step == 99)
 # ------------------------------------
 elif st.session_state.step == 99:
-    scroll_to_top()
     st.markdown(
         '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
         unsafe_allow_html=True,
@@ -923,11 +906,11 @@ elif st.session_state.step == 99:
     )
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
 
-    # 상단 버튼 (빨간색 대신 일반 버튼 스타일 사용)
+    # 상단 버튼 영역 (내 결과가 있는 경우 돌아가기 버튼 표시)
     if st.session_state.user_result:
         col_top1, col_top2 = st.columns(2)
         with col_top1:
-            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="top_result_btn"):
+            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="top_result_btn", type="primary"):
                 st.session_state.step = total_q
                 st.rerun()
         with col_top2:
@@ -966,11 +949,11 @@ elif st.session_state.step == 99:
             st.markdown(f"- {dept}")
         st.markdown("<hr style='margin: 16px 0 24px 0; border: 0.5px solid #CBD5E1;'>", unsafe_allow_html=True)
 
-    # 하단 버튼
+    # 하단 버튼 영역
     if st.session_state.user_result:
         col_bot1, col_bot2 = st.columns(2)
         with col_bot1:
-            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="bottom_result_btn"):
+            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="bottom_result_btn", type="primary"):
                 st.session_state.step = total_q
                 st.rerun()
         with col_bot2:
