@@ -30,7 +30,7 @@ st.markdown(
         margin-bottom: 4px !important;
     }
     
-    /* 질문 글씨 크기 스타일 */
+    /* 💡 [수정] 질문 길이에 따라 하단 선택지가 움직이지 않도록 고정 높이(min-height) 부여 */
     .question-title {
         font-size: 18px !important;
         font-weight: 700 !important;
@@ -38,6 +38,9 @@ st.markdown(
         color: #111827;
         margin-top: 12px !important;
         margin-bottom: 12px !important;
+        min-height: 80px !important;  /* 2~3줄 질문 기준 높이 확보 */
+        display: flex !important;
+        align-items: center !important; /* 1줄 질문일 때 상하 중앙 정렬 */
     }
 
     /* 결과 상단 소제목 */
@@ -101,15 +104,14 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🛠️ [수정] 양 끝 변 위치를 질문 선택지 사각형과 100% 동일 선상에 맞추는 CSS */
+    /* 이전/다음 버튼 영역 레이아웃 (선택지 사각형과 양 끝 일치) */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
-        gap: 12px !important; /* 이전/다음 버튼 사이의 여백 */
+        gap: 12px !important;
     }
     
-    /* 두 컬럼이 화면의 반씩(50:50) 가득 채우도록 지정 */
     div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"],
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         flex: 1 1 0px !important;
@@ -117,13 +119,11 @@ st.markdown(
         min-width: 0 !important;
     }
 
-    /* stButton 컨테이너 가로폭을 선택지 사각형과 일치시킴 */
     div[data-testid="stHorizontalBlock"] div.stButton {
         width: 100% !important;
         max-width: 100% !important;
     }
 
-    /* 실제 버튼이 컨테이너의 좌우 끝까지 가득 채워지도록 설정 */
     div[data-testid="stHorizontalBlock"] div.stButton > button {
         width: 100% !important;
         max-width: 100% !important;
