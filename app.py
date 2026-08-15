@@ -101,40 +101,35 @@ st.markdown(
         text-align: right;
     }
 
-    /* 💡 [수정] 버튼 컨테이너 flex 레이아웃 및 간격(gap) 조절 */
+    /* 💡 [핵심 해결] 이전/다음 버튼 레이아웃 및 중앙 정렬 CSS */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        /* 👇 [핵심 조절 포인트 1] 이전/다음 버튼 사이 간격을 px 단위로 직접 지정하세요 (예: 8px, 16px, 24px 등) */
-        gap: 16px !important; 
+        /* 👇 이전 버튼과 다음 버튼 사이의 간격 (원하는 px로 수정 가능) */
+        gap: 12px !important; 
         width: 100% !important;
-        /* 👇 [핵심 조절 포인트 2] 
-           - 'center': 두 버튼을 가운데로 정렬하여 좁게 모음
-           - 'space-between': 왼쪽 끝과 오른쪽 끝으로 벌림
-           - 'flex-start': 왼쪽에 붙임
-        */
-        justify-content: space-between !important; 
+        justify-content: center !important; 
     }
     
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        /* 컬럼 너비를 유연하게 조절 */
-        flex: 1 1 auto !important;
+        /* 👇 이전 버튼 컬럼이 축소되거나 사라지지 않도록 균등 분배 */
+        flex: 1 1 0px !important;
         width: auto !important;
         min-width: 0 !important;
         display: flex !important;
     }
 
-    /* 왼쪽 컬럼(이전 버튼) 정렬 */
+    /* 왼쪽 컬럼(이전 버튼): 오른쪽으로 붙여 가운데 간격 유지 */
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        justify-content: flex-start !important;
-    }
-    /* 오른쪽 컬럼(다음 버튼) 정렬 */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
         justify-content: flex-end !important;
     }
+    /* 오른쪽 컬럼(다음 버튼): 왼쪽으로 붙여 가운데 간격 유지 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+        justify-content: flex-start !important;
+    }
 
-    /* 💡 이전/다음 버튼 가로 크기 및 모양 제어 */
+    /* 이전/다음 버튼의 가로 크기 제한 */
     div[data-testid="stHorizontalBlock"] button {
         max-width: 140px !important;
         width: 100% !important;
@@ -694,7 +689,7 @@ if st.session_state.step < total_q:
 
     st.write("")
 
-    # 💡 하단 이전/다음 버튼 영역 (간격 조절은 CSS의 gap 속성 활용)
+    # 💡 하단 버튼 2개 (CSS로 중앙 정렬 및 간격 조절됨)
     col1, col2 = st.columns(2)
 
     with col1:
@@ -702,8 +697,6 @@ if st.session_state.step < total_q:
             if st.button("⬅️ 이전 질문", use_container_width=True):
                 st.session_state.step -= 1
                 st.rerun()
-        else:
-            st.empty()
 
     with col2:
         btn_label = (
