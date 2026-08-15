@@ -426,7 +426,7 @@ TYPE_INFO = {
     },
 }
 
-# 20개 질문 문항
+# 20개 질문 문항 (Q1~Q5: S/T, Q6~Q10: A/C, Q11~Q15: M/R, Q16~Q20: G/L)
 questions = [
     {
         "question": "Q1. 뉴스나 유튜브 알고리즘에 주로 떠오르는 관심 영상은?",
@@ -602,8 +602,6 @@ if "answers" not in st.session_state:
     st.session_state.answers = {}
 if "user_result" not in st.session_state:
     st.session_state.user_result = None
-if "scroll_to_top" not in st.session_state:
-    st.session_state.scroll_to_top = False
 
 total_q = len(questions)
 
@@ -863,7 +861,6 @@ elif st.session_state.step == total_q:
     with col_res2:
         if st.button("👀 다른 유형들 모두 살펴보기", use_container_width=True):
             st.session_state.step = 99
-            st.session_state.scroll_to_top = True
             st.rerun()
 
     st.markdown("---")
@@ -889,30 +886,15 @@ elif st.session_state.step == total_q:
 # 3. 모든 유형 모아보기 페이지 (step == 99)
 # ------------------------------------
 elif st.session_state.step == 99:
-    # 📌 페이지 최상단 스크롤 강제 초기화 Script
-    if st.session_state.scroll_to_top:
-        components.html(
-            """
-            <script>
-                function forceScrollTop() {
-                    window.scrollTo(0, 0);
-                    if (window.parent) {
-                        window.parent.scrollTo(0, 0);
-                        var mainSec = window.parent.document.querySelector('section.main');
-                        if (mainSec) {
-                            mainSec.scrollTop = 0;
-                        }
-                    }
-                }
-                forceScrollTop();
-                setTimeout(forceScrollTop, 50);
-                setTimeout(forceScrollTop, 150);
-            </script>
-            """,
-            height=0,
-            width=0,
-        )
-        st.session_state.scroll_to_top = False
+    # 📌 페이지 최상단으로 스크롤 이동 JS 실행
+    components.html(
+        """
+        <script>
+            window.parent.scrollTo(0, 0);
+        </script>
+        """,
+        height=0,
+    )
 
     st.markdown(
         '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
