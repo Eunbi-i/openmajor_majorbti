@@ -43,40 +43,17 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 선지 버튼 두께를 항상 일정하게 고정하는 CSS */
+    /* 선지 및 메인 버튼 디자인 커스텀 CSS */
     div[data-testid="stMainBlockContainer"] div.stButton > button {
-        min-height: 60px !important; /* 텍스트 길이에 상관없이 두께 고정 */
+        min-height: 56px !important;
         display: flex !important;
-        align-items: center !important; /* 텍스트 상하 중앙 정렬 */
-        justify-content: flex-start !important; /* 텍스트 좌측 정렬 */
+        align-items: center !important;
+        justify-content: flex-start !important;
         text-align: left !important;
-        white-space: normal !important; /* 긴 텍스트 자동 줄바꿈 */
+        white-space: normal !important;
         word-break: keep-all !important;
         line-height: 1.4 !important;
         padding: 12px 16px !important;
-    }
-
-    /* 시작 페이지 안내 박스 CSS */
-    .start-container {
-        text-align: center;
-        padding: 30px 20px;
-        background-color: #F8FAFC;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
-    .start-container h2 {
-        color: #1E3A8A;
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 12px;
-    }
-    .start-container p {
-        color: #475569;
-        font-size: 15px;
-        line-height: 1.6;
-        margin-bottom: 8px;
     }
 
     /* 결과 상단 소제목 */
@@ -163,8 +140,8 @@ st.markdown(
     div[data-testid="stHorizontalBlock"] div.stButton > button {
         width: 100% !important;
         max-width: 100% !important;
-        min-height: 44px !important; /* 하단 이전/다음 버튼은 적절한 전용 높이 적용 */
-        justify-content: center !important; /* 이전/다음 텍스트 중앙 정렬 */
+        min-height: 44px !important;
+        justify-content: center !important;
         padding: 8px 12px !important;
         font-size: 14px !important;
     }
@@ -456,7 +433,7 @@ questions = [
     },
 ]
 
-# 세션 상태 초기화 (step = -1 이면 시작 대기 화면)
+# 세션 상태 초기화 (step = -1 : 커버 페이지)
 if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
@@ -468,33 +445,27 @@ total_q = len(questions)
 # 0. 시작 안내 화면 (커버 페이지)
 # ------------------------------------
 if st.session_state.step == -1:
-    st.markdown(
-        '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div class="custom-title">🎓 전공탐색 MBTI TEST</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
+    cover_img_path = "main_cover.png"
 
-    st.markdown(
-        """
-        <div class="start-container">
-            <h2>나에게 딱 맞는 전공은 무엇일까?</h2>
-            <p>간단한 20개 질문을 통해 나의 적성과 성향을 분석하고,<br>
-            제주대학교의 다양한 추천 전공 트랙을 확인해 보세요!</p>
-            <p style="font-size: 13px; color: #64748B; margin-top: 12px;">⏱️ 소요 시간: 약 2~3분</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # 메인 커버 이미지 출력
+    if os.path.exists(cover_img_path):
+        st.image(cover_img_path, use_container_width=True)
+    else:
+        # 폴더에 이미지가 없을 경우 커버용 텍스트 대체 출력
+        st.markdown(
+            '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="custom-title">🎓 전공탐색 MBTI TEST</div>',
+            unsafe_allow_html=True,
+        )
+        st.warning("💡 프로젝트 폴더에 `main_cover.png` 이미지를 넣으면 커버 이미지가 적용됩니다.")
 
-    if st.button("🚀 테스트 시작하기", use_container_width=True, type="primary"):
+    st.write("")
+
+    # 시작 버튼
+    if st.button("🖌️ 테스트 시작하기", use_container_width=True, type="primary"):
         st.session_state.step = 0
         st.rerun()
 
@@ -623,7 +594,7 @@ else:
         unsafe_allow_html=True,
     )
 
-    # 사진 찾기
+    # 결과 대표 사진 찾기
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_path = None
     for name in possible_names:
@@ -634,7 +605,7 @@ else:
             img_path = f"images/{name}"
             break
 
-    # 이미지 출력
+    # 결과 이미지 출력
     if img_path:
         with open(img_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
