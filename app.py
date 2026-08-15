@@ -7,7 +7,7 @@ import streamlit as st
 # 페이지 기본 설정
 st.set_page_config(page_title="전공탐색 MBTI", page_icon="🎓", layout="centered")
 
-# 🎨 디자인 커스텀 CSS (버튼 스타일 및 링크 버튼 완전 고정)
+# 🎨 디자인 커스텀 CSS
 st.markdown(
     """
 <style>
@@ -50,18 +50,13 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* Streamlit 기본 텍스트 및 레이블 가독성 확보 */
     div[data-testid="stMarkdownContainer"] p, 
     div[data-testid="stMarkdownContainer"] span,
     label {
         color: #1E293B !important;
     }
 
-    /* ---------------------------------------------------- */
-    /* 🔘 일반 버튼 & 링크 버튼 스타일 완전 고정 */
-    /* ---------------------------------------------------- */
-
-    /* 1. 일반 버튼 및 st.link_button 기본 스타일 */
+    /* 🔘 버튼 및 링크 스타일 */
     div.stButton > button[kind="secondary"],
     div.stButton > button:not([kind="primary"]),
     a[data-testid="stLinkButton"] {
@@ -83,12 +78,6 @@ st.markdown(
         transition: all 0.2s ease;
     }
 
-    /* 링크 버튼 내부 텍스트 요소 기본 색상 강제 */
-    a[data-testid="stLinkButton"] * {
-        color: #0F172A !important;
-    }
-
-    /* 일반 버튼 및 링크 버튼 Hover / Focus / Active */
     div.stButton > button[kind="secondary"]:hover,
     div.stButton > button[kind="secondary"]:focus,
     div.stButton > button[kind="secondary"]:active,
@@ -104,14 +93,6 @@ st.markdown(
         box-shadow: none !important;
     }
 
-    /* 호버 시 링크 버튼 내부 텍스트 색상 유지 */
-    a[data-testid="stLinkButton"]:hover *,
-    a[data-testid="stLinkButton"]:focus *,
-    a[data-testid="stLinkButton"]:active * {
-        color: #0F172A !important;
-    }
-
-    /* 2. 선택된 버튼 및 강조 버튼 (Primary) */
     div.stButton > button[kind="primary"] {
         background-color: #FF4B4B !important;
         color: #FFFFFF !important;
@@ -130,7 +111,6 @@ st.markdown(
         transition: all 0.2s ease;
     }
 
-    /* 강조 버튼 Hover / Focus / Active */
     div.stButton > button[kind="primary"]:hover,
     div.stButton > button[kind="primary"]:focus,
     div.stButton > button[kind="primary"]:active {
@@ -140,16 +120,12 @@ st.markdown(
         box-shadow: none !important;
     }
 
-    /* 비활성화된 버튼 스타일 */
     div.stButton > button:disabled {
         background-color: #F8FAFC !important;
         color: #94A3B8 !important;
         border-color: #E2E8F0 !important;
     }
 
-    /* ---------------------------------------------------- */
-
-    /* 시작 페이지 메인 캐릭터 이미지 크기 조절 (중앙 정렬) */
     .cover-img-container {
         display: flex;
         justify-content: center;
@@ -164,7 +140,6 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* 시작 페이지 안내 박스 CSS */
     .start-container {
         text-align: center;
         padding: 24px 20px;
@@ -186,7 +161,6 @@ st.markdown(
         margin-bottom: 8px;
     }
 
-    /* 결과 상단 소제목 */
     .result-sub {
         font-size: 18px !important;
         font-weight: 600 !important;
@@ -194,7 +168,6 @@ st.markdown(
         margin-bottom: 4px !important;
     }
 
-    /* 결과 제목 스타일 */
     .result-title {
         font-size: 24px !important;
         font-weight: 800 !important;
@@ -203,7 +176,6 @@ st.markdown(
         color: #1E3A8A !important;
     }
 
-    /* 유형 설명글 스타일 */
     .result-desc-box {
         font-size: 14px !important;
         line-height: 1.5 !important;
@@ -215,7 +187,6 @@ st.markdown(
         color: #0C4A6E !important;
     }
 
-    /* 이미지 완벽 중앙 정렬 */
     .img-center-container {
         display: flex;
         justify-content: center;
@@ -229,7 +200,6 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* 모아보기 카드 이미지 스타일 */
     .all-type-img-container {
         display: flex;
         justify-content: center;
@@ -243,7 +213,7 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* 성향 지표 Flexbox */
+    /* 성향 지표 텍스트 레이아웃 */
     .indicator-row {
         display: flex;
         justify-content: space-between;
@@ -262,7 +232,6 @@ st.markdown(
         text-align: right;
     }
 
-    /* 이전/다음 버튼 영역 레이아웃 */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -291,7 +260,6 @@ st.markdown(
         font-size: 14px !important;
     }
 
-    /* 모아보기 전용 카드 스타일 */
     .type-card {
         background-color: #F8FAFC;
         border: 1px solid #E2E8F0;
@@ -449,7 +417,7 @@ TYPE_INFO = {
     },
 }
 
-# 20개 질문 문항
+# 20개 질문 문항 (Q1~Q5: S/T, Q6~Q10: A/C, Q11~Q15: M/R, Q16~Q20: G/L)
 questions = [
     {
         "question": "Q1. 뉴스나 유튜브 알고리즘에 주로 떠오르는 관심 영상은?",
@@ -618,7 +586,7 @@ def get_image_base64_html(code, is_small=False):
         """
     return ""
 
-# 세션 상태 초기화 (-1: 시작페이지, 0~19: 질문, 20: 결과, 99: 모든 유형 모아보기)
+# 세션 상태 초기화
 if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
@@ -676,6 +644,7 @@ if st.session_state.step == -1:
 
     if st.button("🚀 테스트 시작하기", use_container_width=True, type="primary"):
         st.session_state.step = 0
+        st.session_state.answers = {}
         st.session_state.user_result = None
         st.rerun()
 
@@ -710,10 +679,11 @@ elif st.session_state.step < total_q:
     )
     st.write("선택지를 골라주세요:")
 
-    selected_option = st.session_state.answers.get(current_idx, 0)
+    # 현재 선택된 옵션의 인덱스 확인
+    selected_option = st.session_state.answers.get(current_idx, None)
 
     for idx, (opt_text, code) in enumerate(q_data["options"]):
-        is_selected = selected_option == idx
+        is_selected = (selected_option == idx)
         btn_type = "primary" if is_selected else "secondary"
 
         if st.button(
@@ -746,36 +716,43 @@ elif st.session_state.step < total_q:
             "🔥 결과 확인" if current_idx == total_q - 1 else "다음 질문 ➡️"
         )
         if st.button(btn_label, use_container_width=True, key="next_btn"):
-            st.session_state.step += 1
-            st.rerun()
+            if current_idx not in st.session_state.answers:
+                st.warning("⚠️ 답변을 선택한 후 다음으로 넘어가 주세요!")
+            else:
+                st.session_state.step += 1
+                st.rerun()
 
 # ------------------------------------
 # 2. 결과 출력 화면
 # ------------------------------------
 elif st.session_state.step == total_q:
+    # 성향 지표 점수 계산
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
     for i, ans_idx in st.session_state.answers.items():
         code = questions[i]["options"][ans_idx][1]
         scores[code] += 1
 
+    # 4개 영역별 비율(%) 계산 (각 항목당 5개 질문 기준)
     pct_S = round((scores["S"] / 5) * 100)
     pct_T = 100 - pct_S
+
     pct_A = round((scores["A"] / 5) * 100)
     pct_C = 100 - pct_A
+
     pct_M = round((scores["M"] / 5) * 100)
     pct_R = 100 - pct_M
+
     pct_G = round((scores["G"] / 5) * 100)
     pct_L = 100 - pct_G
 
+    # final MBTI 조합
     mbti = ""
     mbti += "S" if scores["S"] >= scores["T"] else "T"
     mbti += "A" if scores["A"] >= scores["C"] else "C"
     mbti += "M" if scores["M"] >= scores["R"] else "R"
     mbti += "G" if scores["G"] >= scores["L"] else "L"
 
-    # 내 결과 정보 세션 저장
     st.session_state.user_result = mbti
-
     result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
     st.balloons()
 
@@ -826,9 +803,10 @@ elif st.session_state.step == total_q:
         unsafe_allow_html=True,
     )
 
+    # 📊 4개 영역별 성향 지표 시각화
     st.markdown("---")
     st.subheader("📊 4개 영역별 성향 지표")
-    st.caption("선택하신 답변을 바탕으로 한 영역별 비율입니다.")
+    st.caption("선택하신 답변을 바탕으로 분석된 영역별 비율입니다.")
 
     def render_indicator(left_text, left_pct, right_text, right_pct):
         st.markdown(
@@ -840,7 +818,8 @@ elif st.session_state.step == total_q:
         """,
             unsafe_allow_html=True,
         )
-        st.progress(left_pct / 100)
+        # Streamlit 프로그레스 바는 0.0~1.0 float 값을 사용
+        st.progress(left_pct / 100.0)
 
     render_indicator("사회/인간 (S)", pct_S, "기술/자연 (T)", pct_T)
     render_indicator("분석/논리 (A)", pct_A, "창의/응용 (C)", pct_C)
@@ -883,7 +862,6 @@ elif st.session_state.step == total_q:
     st.markdown("---")
     st.markdown("### 🔗 제주대학교 관련 링크")
 
-    # 세로(1열) 정렬 및 단과대학 링크 삭제
     st.link_button(
         "📸 2026 자유전공 인스타그램",
         "https://www.instagram.com/jnu_start_2026?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
@@ -918,7 +896,6 @@ elif st.session_state.step == 99:
     )
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
 
-    # 상단 버튼 영역 (내 결과가 있는 경우 돌아가기 버튼 표시)
     if st.session_state.user_result:
         col_top1, col_top2 = st.columns(2)
         with col_top1:
@@ -940,7 +917,6 @@ elif st.session_state.step == 99:
 
     st.write("")
 
-    # 16개 유형 반복 출력
     for code, info in TYPE_INFO.items():
         st.markdown(
             f"""
@@ -961,7 +937,6 @@ elif st.session_state.step == 99:
             st.markdown(f"- {dept}")
         st.markdown("<hr style='margin: 16px 0 24px 0; border: 0.5px solid #CBD5E1;'>", unsafe_allow_html=True)
 
-    # 하단 버튼 영역
     if st.session_state.user_result:
         col_bot1, col_bot2 = st.columns(2)
         with col_bot1:
