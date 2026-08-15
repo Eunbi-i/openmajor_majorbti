@@ -43,7 +43,7 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 선지 및 메인 버튼 디자인 커스텀 CSS */
+    /* 선지 버튼 스타일 */
     div[data-testid="stMainBlockContainer"] div.stButton > button {
         min-height: 56px !important;
         display: flex !important;
@@ -54,6 +54,43 @@ st.markdown(
         word-break: keep-all !important;
         line-height: 1.4 !important;
         padding: 12px 16px !important;
+    }
+
+    /* 시작 페이지 메인 캐릭터 이미지 크기 조절 (중앙 정렬) */
+    .cover-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 16px;
+        width: 100%;
+    }
+    .cover-img-container img {
+        width: 180px !important; /* 이미지 크기 조절 (필요 시 숫자를 변경하세요) */
+        height: auto !important;
+        object-fit: contain;
+    }
+
+    /* 시작 페이지 안내 박스 CSS */
+    .start-container {
+        text-align: center;
+        padding: 24px 20px;
+        background-color: #F8FAFC;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        margin-bottom: 20px;
+    }
+    .start-container h2 {
+        color: #1E3A8A;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+    .start-container p {
+        color: #475569;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 8px;
     }
 
     /* 결과 상단 소제목 */
@@ -117,7 +154,7 @@ st.markdown(
         text-align: right;
     }
 
-    /* 이전/다음 버튼 영역 레이아웃 (선택지 사각형과 양 끝 일치) */
+    /* 이전/다음 버튼 영역 레이아웃 */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -433,7 +470,7 @@ questions = [
     },
 ]
 
-# 세션 상태 초기화 (step = -1 : 커버 페이지)
+# 세션 상태 초기화 (step = -1 : 시작 화면)
 if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
@@ -445,27 +482,48 @@ total_q = len(questions)
 # 0. 시작 안내 화면 (커버 페이지)
 # ------------------------------------
 if st.session_state.step == -1:
+    st.markdown(
+        '<div class="header-sub1">JEJU NATIONAL UNIVERSITY - GLOBAL AUTONOMY MAJOR EXPERIMENT</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="custom-title">🎓 전공탐색 MBTI TEST</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
+
+    # 상단 메인 캐릭터 이미지 (180px 크기로 작게 조절하여 중앙 배치)
     cover_img_path = "main_cover.png"
-
-    # 메인 커버 이미지 출력
     if os.path.exists(cover_img_path):
-        st.image(cover_img_path, use_container_width=True)
-    else:
-        # 폴더에 이미지가 없을 경우 커버용 텍스트 대체 출력
+        with open(cover_img_path, "rb") as f:
+            encoded_img = base64.b64encode(f.read()).decode()
+        ext = cover_img_path.split(".")[-1].lower()
+        mime_type = "image/png" if ext == "png" else "image/jpeg"
+
         st.markdown(
-            '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
+            f"""
+            <div class="cover-img-container">
+                <img src="data:{mime_type};base64,{encoded_img}" alt="메인 캐릭터">
+            </div>
+            """,
             unsafe_allow_html=True,
         )
-        st.markdown(
-            '<div class="custom-title">🎓 전공탐색 MBTI TEST</div>',
-            unsafe_allow_html=True,
-        )
-        st.warning("💡 프로젝트 폴더에 `main_cover.png` 이미지를 넣으면 커버 이미지가 적용됩니다.")
 
-    st.write("")
+    # 질문 문구 상단 안내 박스
+    st.markdown(
+        """
+        <div class="start-container">
+            <h2>나에게 딱 맞는 전공은 무엇일까?</h2>
+            <p>간단한 20개 질문을 통해 나의 적성과 성향을 분석하고,<br>
+            제주대학교의 다양한 추천 전공 트랙을 확인해 보세요!</p>
+            <p style="font-size: 13px; color: #64748B; margin-top: 12px;">⏱️ Estimated Time: about 2-3 minutes</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # 시작 버튼
-    if st.button("🖌️ 테스트 시작하기", use_container_width=True, type="primary"):
+    # 테스트 시작하기 버튼
+    if st.button("🚀 테스트 시작하기", use_container_width=True, type="primary"):
         st.session_state.step = 0
         st.rerun()
 
