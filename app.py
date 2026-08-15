@@ -7,36 +7,42 @@ import streamlit as st
 # 페이지 기본 설정
 st.set_page_config(page_title="전공탐색 MBTI", page_icon="🎓", layout="centered")
 
-# 🎨 디자인 커스텀 CSS
+# 🎨 디자인 커스텀 CSS (배경 및 텍스트 라이트 모드 고정)
 st.markdown(
     """
 <style>
+    /* 전체 앱 배경을 강제로 흰색/밝은 톤으로 고정 */
+    .stApp {
+        background-color: #FFFFFF !important;
+        color: #1E293B !important;
+    }
+
     /* 상단 헤더 스타일 */
     .header-sub1 {
         font-size: 14px !important;
-        color: #9CA3AF !important;
+        color: #64748B !important;
         margin-bottom: 4px !important;
     }
     .custom-title {
         font-size: 28px !important;
         font-weight: 800 !important;
+        color: #0F172A !important;
         margin-top: 4px !important;
         margin-bottom: 4px !important;
         line-height: 1.2 !important;
     }
     .header-sub2 {
         font-size: 14px !important;
-        color: #9CA3AF !important;
+        color: #64748B !important;
         margin-bottom: 4px !important;
     }
     
-    /* [수정] 다크모드/라이트모드 공통 - 질문 텍스트 색상 및 가독성 고정 */
+    /* 질문 텍스트 스타일 - 어두운 검은색 계열로 완전 고정 */
     .question-title {
         font-size: 19px !important;
         font-weight: 700 !important;
         line-height: 1.4 !important;
-        color: #FFFFFF !important; /* 항상 선명한 흰색으로 고정 */
-        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5); /* 어두운/밝은 배경 모두 가독성 확보 */
+        color: #0F172A !important;
         margin-top: 12px !important;
         margin-bottom: 12px !important;
         min-height: 80px !important;
@@ -44,7 +50,14 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 선지 버튼 스타일 */
+    /* Streamlit 기본 텍스트 및 레이블 가독성 확보 */
+    div[data-testid="stMarkdownContainer"] p, 
+    div[data-testid="stMarkdownContainer"] span,
+    label {
+        color: #1E293B !important;
+    }
+
+    /* 선지 및 메인 버튼 스타일 */
     div[data-testid="stMainBlockContainer"] div.stButton > button {
         min-height: 56px !important;
         display: flex !important;
@@ -72,23 +85,23 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* 시작 페이지 안내 박스 CSS (다크모드 대응) */
+    /* 시작 페이지 안내 박스 CSS (밝은 박스/검은 글씨) */
     .start-container {
         text-align: center;
         padding: 24px 20px;
-        background-color: #1E293B;
+        background-color: #F8FAFC;
         border-radius: 12px;
-        border: 1px solid #334155;
+        border: 1px solid #E2E8F0;
         margin-bottom: 20px;
     }
     .start-container h2 {
-        color: #38BDF8;
+        color: #1E3A8A !important;
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 12px;
     }
     .start-container p {
-        color: #E2E8F0;
+        color: #334155 !important;
         font-size: 15px;
         line-height: 1.6;
         margin-bottom: 8px;
@@ -98,7 +111,7 @@ st.markdown(
     .result-sub {
         font-size: 18px !important;
         font-weight: 600 !important;
-        color: #E2E8F0;
+        color: #334155 !important;
         margin-bottom: 4px !important;
     }
 
@@ -108,19 +121,19 @@ st.markdown(
         font-weight: 800 !important;
         margin-top: 4px !important;
         margin-bottom: 16px !important;
-        color: #38BDF8;
+        color: #1E3A8A !important;
     }
 
     /* 유형 설명글 스타일 */
     .result-desc-box {
-        font-size: 13px !important;
+        font-size: 14px !important;
         line-height: 1.5 !important;
-        background-color: #0F172A;
+        background-color: #F0F9FF;
         border-left: 4px solid #0284C7;
         padding: 12px 16px;
         border-radius: 4px;
         margin-bottom: 16px;
-        color: #E0F2FE;
+        color: #0C4A6E !important;
     }
 
     /* 이미지 완벽 중앙 정렬 */
@@ -145,6 +158,7 @@ st.markdown(
         width: 100%;
         font-size: 15px;
         margin-bottom: 4px;
+        color: #0F172A !important;
     }
     .indicator-left {
         font-weight: bold;
@@ -515,7 +529,7 @@ if st.session_state.step == -1:
             <h2>나에게 딱 맞는 전공은 무엇일까?</h2>
             <p>간단한 20개 질문을 통해 나의 적성과 성향을 분석하고,<br>
             제주대학교의 다양한 추천 전공 트랙을 확인해 보세요!</p>
-            <p style="font-size: 13px; color: #94A3B8; margin-top: 12px;">⏱️ Estimated Time: about 2-3 minutes</p>
+            <p style="font-size: 13px; color: #64748B; margin-top: 12px;">⏱️ Estimated Time: about 2-3 minutes</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -687,7 +701,7 @@ else:
     ]
     depts_str = ", ".join(clean_depts)
     st.markdown(
-        f'<div style="font-size: 16px; margin-top: 12px; margin-bottom: 8px;">💡 <b>추천 학과</b>: {depts_str}</div>',
+        f'<div style="font-size: 16px; margin-top: 12px; margin-bottom: 8px; color: #0F172A;">💡 <b>추천 학과</b>: {depts_str}</div>',
         unsafe_allow_html=True,
     )
 
@@ -719,7 +733,7 @@ else:
 
     st.markdown(
         """
-    <div style="background-color: #064E3B; color: #D1FAE5; padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid #059669;">
+    <div style="background-color: #D1FAE5; color: #065F46; padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid #A7F3D0;">
         💡 <b>글로벌자율학부(자유전공)의 특별함!</b><br>
         지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?<br>
         <b>글로벌자율학부(자유전공)</b>에 입학하면 <b>1학년 동안 이 학과들의 수업을 들어보고</b> 나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
