@@ -134,7 +134,7 @@ st.markdown("""
     div[data-testid="stHorizontalBlock"] button {
         max-width: 140px !important;
         width: auto !important;
-        min-width: 150px !important;
+        min-width: 110px !important;
         padding-left: 12px !important;
         padding-right: 12px !important;
         font-size: 14px !important;
