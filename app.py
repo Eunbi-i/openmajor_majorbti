@@ -56,9 +56,10 @@ st.markdown(
         color: #1E293B !important;
     }
 
-    /* 🔘 버튼 및 링크 스타일 */
+    /* 🔘 일반 버튼 & 링크 버튼 통합 스타일 (테스트 다시하기와 동일하게 통일) */
     div.stButton > button[kind="secondary"],
     div.stButton > button:not([kind="primary"]),
+    div[data-testid="stLinkButton"] > a,
     a[data-testid="stLinkButton"] {
         background-color: #F1F5F9 !important;
         color: #0F172A !important;
@@ -73,17 +74,23 @@ st.markdown(
         word-break: keep-all !important;
         line-height: 1.4 !important;
         padding: 10px 16px !important;
+        font-size: 15px !important;
         font-weight: 600 !important;
         text-decoration: none !important;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease !important;
+        box-sizing: border-box !important;
     }
 
+    /* 🔘 호버 및 액티브 반응 동일화 */
     div.stButton > button[kind="secondary"]:hover,
     div.stButton > button[kind="secondary"]:focus,
     div.stButton > button[kind="secondary"]:active,
     div.stButton > button:not([kind="primary"]):hover,
     div.stButton > button:not([kind="primary"]):focus,
     div.stButton > button:not([kind="primary"]):active,
+    div[data-testid="stLinkButton"] > a:hover,
+    div[data-testid="stLinkButton"] > a:focus,
+    div[data-testid="stLinkButton"] > a:active,
     a[data-testid="stLinkButton"]:hover,
     a[data-testid="stLinkButton"]:focus,
     a[data-testid="stLinkButton"]:active {
@@ -93,6 +100,7 @@ st.markdown(
         box-shadow: none !important;
     }
 
+    /* 🔴 Primary (주요 강조 버튼 및 선택된 답변) */
     div.stButton > button[kind="primary"] {
         background-color: #FF4B4B !important;
         color: #FFFFFF !important;
@@ -108,7 +116,7 @@ st.markdown(
         line-height: 1.4 !important;
         padding: 12px 16px !important;
         font-weight: 700 !important;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease !important;
     }
 
     div.stButton > button[kind="primary"]:hover,
@@ -679,7 +687,6 @@ elif st.session_state.step < total_q:
     )
     st.write("선택지를 골라주세요:")
 
-    # 현재 선택된 옵션의 인덱스 확인
     selected_option = st.session_state.answers.get(current_idx, None)
 
     for idx, (opt_text, code) in enumerate(q_data["options"]):
@@ -726,13 +733,11 @@ elif st.session_state.step < total_q:
 # 2. 결과 출력 화면
 # ------------------------------------
 elif st.session_state.step == total_q:
-    # 성향 지표 점수 계산
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
     for i, ans_idx in st.session_state.answers.items():
         code = questions[i]["options"][ans_idx][1]
         scores[code] += 1
 
-    # 4개 영역별 비율(%) 계산 (각 항목당 5개 질문 기준)
     pct_S = round((scores["S"] / 5) * 100)
     pct_T = 100 - pct_S
 
@@ -745,7 +750,6 @@ elif st.session_state.step == total_q:
     pct_G = round((scores["G"] / 5) * 100)
     pct_L = 100 - pct_G
 
-    # final MBTI 조합
     mbti = ""
     mbti += "S" if scores["S"] >= scores["T"] else "T"
     mbti += "A" if scores["A"] >= scores["C"] else "C"
@@ -818,7 +822,6 @@ elif st.session_state.step == total_q:
         """,
             unsafe_allow_html=True,
         )
-        # Streamlit 프로그레스 바는 0.0~1.0 float 값을 사용
         st.progress(left_pct / 100.0)
 
     render_indicator("사회/인간 (S)", pct_S, "기술/자연 (T)", pct_T)
