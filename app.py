@@ -7,7 +7,7 @@ import streamlit as st
 # 페이지 기본 설정
 st.set_page_config(page_title="전공탐색 MBTI", page_icon="🎓", layout="centered")
 
-# 🎨 디자인 커스텀 CSS (버튼 스타일 완전 고정)
+# 🎨 디자인 커스텀 CSS (버튼 스타일 및 링크 버튼 완전 고정)
 st.markdown(
     """
 <style>
@@ -58,36 +58,41 @@ st.markdown(
     }
 
     /* ---------------------------------------------------- */
-    /* 🔘 버튼 스타일 완전 고정 (다크모드 영향 차단) */
+    /* 🔘 일반 버튼 & 링크 버튼 스타일 완전 고정 */
     /* ---------------------------------------------------- */
 
-    /* 1. 일반 선택지 및 기본 버튼 (Secondary) */
+    /* 1. 일반 버튼 및 st.link_button 기본 스타일 */
     div.stButton > button[kind="secondary"],
-    div.stButton > button:not([kind="primary"]) {
+    div.stButton > button:not([kind="primary"]),
+    a[data-testid="stLinkButton"] {
         background-color: #F1F5F9 !important;
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important;
         border-radius: 8px !important;
-        min-height: 56px !important;
+        min-height: 52px !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: flex-start !important;
-        text-align: left !important;
+        justify-content: center !important;
+        text-align: center !important;
         white-space: normal !important;
         word-break: keep-all !important;
         line-height: 1.4 !important;
-        padding: 12px 16px !important;
+        padding: 10px 16px !important;
         font-weight: 600 !important;
+        text-decoration: none !important;
         transition: all 0.2s ease;
     }
 
-    /* 일반 버튼 Hover / Focus / Active */
+    /* 일반 버튼 및 링크 버튼 Hover / Focus / Active */
     div.stButton > button[kind="secondary"]:hover,
     div.stButton > button[kind="secondary"]:focus,
     div.stButton > button[kind="secondary"]:active,
     div.stButton > button:not([kind="primary"]):hover,
     div.stButton > button:not([kind="primary"]):focus,
-    div.stButton > button:not([kind="primary"]):active {
+    div.stButton > button:not([kind="primary"]):active,
+    a[data-testid="stLinkButton"]:hover,
+    a[data-testid="stLinkButton"]:focus,
+    a[data-testid="stLinkButton"]:active {
         background-color: #E2E8F0 !important;
         color: #0F172A !important;
         border-color: #94A3B8 !important;
@@ -123,7 +128,7 @@ st.markdown(
         box-shadow: none !important;
     }
 
-    /* 비활성화된 버튼 스타일 (이전 질문 버튼 첫 문항일 때) */
+    /* 비활성화된 버튼 스타일 */
     div.stButton > button:disabled {
         background-color: #F8FAFC !important;
         color: #94A3B8 !important;
@@ -212,6 +217,20 @@ st.markdown(
         object-fit: contain;
     }
 
+    /* 모아보기 카드 이미지 스타일 */
+    .all-type-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 10px 0;
+        width: 100%;
+    }
+    .all-type-img-container img {
+        width: 140px !important;
+        height: 140px !important;
+        object-fit: contain;
+    }
+
     /* 성향 지표 Flexbox */
     .indicator-row {
         display: flex;
@@ -258,6 +277,21 @@ st.markdown(
         justify-content: center !important;
         padding: 8px 12px !important;
         font-size: 14px !important;
+    }
+
+    /* 모아보기 전용 카드 스타일 */
+    .type-card {
+        background-color: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+    .type-card-title {
+        font-size: 20px !important;
+        font-weight: 800 !important;
+        color: #1E3A8A !important;
+        margin-bottom: 8px !important;
     }
 </style>
 """,
@@ -547,7 +581,32 @@ questions = [
     },
 ]
 
-# 세션 상태 초기화
+# 이미지 로드 헬퍼 함수
+def get_image_base64_html(code, is_small=False):
+    possible_names = [f"{code}.png", f"{code}.PNG", f"{code}.jpg", f"{code}.JPG"]
+    img_path = None
+    for name in possible_names:
+        if os.path.exists(name):
+            img_path = name
+            break
+        elif os.path.exists(f"images/{name}"):
+            img_path = f"images/{name}"
+            break
+
+    if img_path:
+        with open(img_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+        ext = img_path.split(".")[-1].lower()
+        mime_type = "image/png" if ext == "png" else "image/jpeg"
+        container_class = "all-type-img-container" if is_small else "img-center-container"
+        return f"""
+        <div class="{container_class}">
+            <img src="data:{mime_type};base64,{encoded_string}" alt="{code}">
+        </div>
+        """
+    return ""
+
+# 세션 상태 초기화 (-1: 시작페이지, 0~19: 질문, 20: 결과, 99: 모든 유형 모아보기)
 if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
@@ -678,7 +737,7 @@ elif st.session_state.step < total_q:
 # ------------------------------------
 # 2. 결과 출력 화면
 # ------------------------------------
-else:
+elif st.session_state.step == total_q:
     scores = {"S": 0, "T": 0, "A": 0, "C": 0, "M": 0, "R": 0, "G": 0, "L": 0}
     for i, ans_idx in st.session_state.answers.items():
         code = questions[i]["options"][ans_idx][1]
@@ -729,31 +788,9 @@ else:
         unsafe_allow_html=True,
     )
 
-    possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
-    img_path = None
-    for name in possible_names:
-        if os.path.exists(name):
-            img_path = name
-            break
-        elif os.path.exists(f"images/{name}"):
-            img_path = f"images/{name}"
-            break
-
-    if img_path:
-        with open(img_path, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read()).decode()
-
-        ext = img_path.split(".")[-1].lower()
-        mime_type = "image/png" if ext == "png" else "image/jpeg"
-
-        st.markdown(
-            f"""
-            <div class="img-center-container">
-                <img src="data:{mime_type};base64,{encoded_string}" alt="{mbti}">
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    img_html = get_image_base64_html(mbti, is_small=False)
+    if img_html:
+        st.markdown(img_html, unsafe_allow_html=True)
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
@@ -813,10 +850,16 @@ else:
     )
 
     st.write("")
-    if st.button("🔄 테스트 다시 하기", use_container_width=True):
-        st.session_state.step = -1
-        st.session_state.answers = {}
-        st.rerun()
+    col_res1, col_res2 = st.columns(2)
+    with col_res1:
+        if st.button("🔄 테스트 다시 하기", use_container_width=True):
+            st.session_state.step = -1
+            st.session_state.answers = {}
+            st.rerun()
+    with col_res2:
+        if st.button("👀 다른 유형들 모두 살펴보기", use_container_width=True):
+            st.session_state.step = 99
+            st.rerun()
 
     st.markdown("---")
     st.markdown("### 🔗 제주대학교 관련 링크")
@@ -844,3 +887,54 @@ else:
             "https://www.jejunu.ac.kr/college/info",
             use_container_width=True,
         )
+
+# ------------------------------------
+# 3. 모든 유형 모아보기 페이지 (step == 99)
+# ------------------------------------
+elif st.session_state.step == 99:
+    st.markdown(
+        '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="custom-title">📋 16가지 전공 MBTI 유형 모아보기</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="header-sub2">자유전공 진입 가능 학과와 16가지 성향 유형 요약</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
+
+    if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="top_home_btn"):
+        st.session_state.step = -1
+        st.session_state.answers = {}
+        st.rerun()
+
+    st.write("")
+
+    # 16개 유형 반복 출력
+    for code, info in TYPE_INFO.items():
+        st.markdown(
+            f"""
+            <div class="type-card">
+                <div class="type-card-title">✨ {info['title']} ({code})</div>
+                <div class="result-desc-box" style="margin-bottom: 8px;">{info['desc']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        img_html = get_image_base64_html(code, is_small=True)
+        if img_html:
+            st.markdown(img_html, unsafe_allow_html=True)
+
+        st.markdown("**📚 추천 전공 트랙:**")
+        for dept in info["depts"]:
+            st.markdown(f"- {dept}")
+        st.markdown("<hr style='margin: 16px 0 24px 0; border: 0.5px solid #CBD5E1;'>", unsafe_allow_html=True)
+
+    if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="bottom_home_btn"):
+        st.session_state.step = -1
+        st.session_state.answers = {}
+        st.rerun()
