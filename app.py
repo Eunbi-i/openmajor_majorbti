@@ -83,6 +83,11 @@ st.markdown(
         transition: all 0.2s ease;
     }
 
+    /* 링크 버튼 내부 텍스트 요소 기본 색상 강제 */
+    a[data-testid="stLinkButton"] * {
+        color: #0F172A !important;
+    }
+
     /* 일반 버튼 및 링크 버튼 Hover / Focus / Active */
     div.stButton > button[kind="secondary"]:hover,
     div.stButton > button[kind="secondary"]:focus,
@@ -97,6 +102,13 @@ st.markdown(
         color: #0F172A !important;
         border-color: #94A3B8 !important;
         box-shadow: none !important;
+    }
+
+    /* 호버 시 링크 버튼 내부 텍스트 색상 유지 */
+    a[data-testid="stLinkButton"]:hover *,
+    a[data-testid="stLinkButton"]:focus *,
+    a[data-testid="stLinkButton"]:active * {
+        color: #0F172A !important;
     }
 
     /* 2. 선택된 버튼 및 강조 버튼 (Primary) */
