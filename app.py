@@ -859,7 +859,7 @@ elif st.session_state.step == total_q:
             st.session_state.user_result = None
             st.rerun()
     with col_res2:
-        if st.button("👀 다른 유형들 모두 살펴보기", use_container_width=True):
+        if st.button("👀 다른 유형들 살펴보기", use_container_width=True):
             st.session_state.step = 99
             st.rerun()
 
