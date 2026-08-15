@@ -567,6 +567,11 @@ if st.session_state.step == -1:
         '<div class="custom-title">🎓 전공탐색 MBTI TEST</div>',
         unsafe_allow_html=True,
     )
+    # 👇 해당 문구가 시작 화면에 누락되어 있어 추가되었습니다.
+    st.markdown(
+        '<div class="header-sub2">개인 맞춤형 전공 탐색 및 추천 프로그램 | 총 20문항</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
 
     cover_img_path = "main_cover.png"
