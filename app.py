@@ -30,7 +30,7 @@ st.markdown(
         margin-bottom: 4px !important;
     }
     
-    /* 💡 [수정] 질문 길이에 따라 하단 선택지가 움직이지 않도록 고정 높이(min-height) 부여 */
+    /* 질문 길이에 따라 위치가 흔들리지 않도록 고정 높이 부여 */
     .question-title {
         font-size: 18px !important;
         font-weight: 700 !important;
@@ -38,9 +38,21 @@ st.markdown(
         color: #111827;
         margin-top: 12px !important;
         margin-bottom: 12px !important;
-        min-height: 80px !important;  /* 2~3줄 질문 기준 높이 확보 */
+        min-height: 80px !important;
         display: flex !important;
-        align-items: center !important; /* 1줄 질문일 때 상하 중앙 정렬 */
+        align-items: center !important;
+    }
+
+    /* 💡 [수정] 선지 버튼 두께를 항상 일정하게 고정하는 CSS */
+    div[data-testid="stMainBlockContainer"] div.stButton > button {
+        min-height: 60px !important; /* 텍스트 길이에 상관없이 두께 고정 */
+        display: flex !important;
+        align-items: center !important; /* 텍스트 상하 중앙 정렬 */
+        justify-content: flex-start !important; /* 텍스트 좌측 정렬 */
+        text-align: left !important;
+        white-space: normal !important; /* 긴 텍스트 자동 줄바꿈 */
+        word-break: keep-all !important;
+        line-height: 1.4 !important;
     }
 
     /* 결과 상단 소제목 */
@@ -127,6 +139,8 @@ st.markdown(
     div[data-testid="stHorizontalBlock"] div.stButton > button {
         width: 100% !important;
         max-width: 100% !important;
+        min-height: 44px !important; /* 하단 이전/다음 버튼은 적절한 전용 높이 적용 */
+        justify-content: center !important; /* 이전/다음 텍스트 중앙 정렬 */
         padding: 8px 12px !important;
         font-size: 14px !important;
     }
