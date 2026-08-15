@@ -43,7 +43,7 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 💡 [수정] 선지 버튼 두께를 항상 일정하게 고정하는 CSS */
+    /* 선지 버튼 두께를 항상 일정하게 고정하는 CSS */
     div[data-testid="stMainBlockContainer"] div.stButton > button {
         min-height: 60px !important; /* 텍스트 길이에 상관없이 두께 고정 */
         display: flex !important;
@@ -53,6 +53,7 @@ st.markdown(
         white-space: normal !important; /* 긴 텍스트 자동 줄바꿈 */
         word-break: keep-all !important;
         line-height: 1.4 !important;
+        padding: 12px 16px !important;
     }
 
     /* 결과 상단 소제목 */
@@ -678,14 +679,13 @@ if st.session_state.step < total_q:
 
     selected_option = st.session_state.answers.get(current_idx, 0)
 
+    # 💡 이모티콘을 없애고 텍스트만 깔끔하게 출력하도록 적용된 부분
     for idx, (opt_text, code) in enumerate(q_data["options"]):
         is_selected = selected_option == idx
-        prefix = "🔘 " if is_selected else "⚪ "
-        btn_text = f"{prefix}{opt_text}"
         btn_type = "primary" if is_selected else "secondary"
 
         if st.button(
-            btn_text,
+            opt_text,  # prefix 이모티콘 없이 pure text 사용
             key=f"opt_{current_idx}_{idx}",
             use_container_width=True,
             type=btn_type,
