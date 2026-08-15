@@ -40,7 +40,7 @@ st.markdown(
         margin-bottom: 12px !important;
     }
 
-    /* 결과 상단 소제목 (당신의 전공 유형은) */
+    /* 결과 상단 소제목 */
     .result-sub {
         font-size: 18px !important;
         font-weight: 600 !important;
@@ -48,7 +48,7 @@ st.markdown(
         margin-bottom: 4px !important;
     }
 
-    /* 결과 제목 스타일 (유형 이름) */
+    /* 결과 제목 스타일 */
     .result-title {
         font-size: 24px !important;
         font-weight: 800 !important;
@@ -69,7 +69,7 @@ st.markdown(
         color: #0C4A6E;
     }
 
-    /* 이미지 200x200px 완벽 중앙 정렬 스타일 */
+    /* 이미지 완벽 중앙 정렬 */
     .img-center-container {
         display: flex;
         justify-content: center;
@@ -83,7 +83,7 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* 모바일 대응 성향 지표 Flexbox */
+    /* 성향 지표 Flexbox */
     .indicator-row {
         display: flex;
         justify-content: space-between;
@@ -101,41 +101,50 @@ st.markdown(
         text-align: right;
     }
 
-    /* 💡 [핵심 해결] 이전/다음 버튼 레이아웃 및 중앙 정렬 CSS */
+    /* 🛠️ [해결] 이전/다음 버튼 중앙 정렬 및 사라짐 방지 CSS (구버전/신버전 Streamlit 모두 호환) */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        /* 👇 이전 버튼과 다음 버튼 사이의 간격 (원하는 px로 수정 가능) */
-        gap: 12px !important; 
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 12px !important;
         width: 100% !important;
-        justify-content: center !important; 
     }
     
+    /* 최신 stColumn 및 구버전 column 대응 */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"],
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        /* 👇 이전 버튼 컬럼이 축소되거나 사라지지 않도록 균등 분배 */
         flex: 1 1 0px !important;
-        width: auto !important;
+        width: 100% !important;
         min-width: 0 !important;
         display: flex !important;
     }
 
-    /* 왼쪽 컬럼(이전 버튼): 오른쪽으로 붙여 가운데 간격 유지 */
+    /* 첫 번째 컬럼 (이전 버튼 영역) */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1),
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
         justify-content: flex-end !important;
     }
-    /* 오른쪽 컬럼(다음 버튼): 왼쪽으로 붙여 가운데 간격 유지 */
+
+    /* 두 번째 컬럼 (다음 버튼 영역) */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2),
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
         justify-content: flex-start !important;
     }
 
-    /* 이전/다음 버튼의 가로 크기 제한 */
-    div[data-testid="stHorizontalBlock"] button {
+    /* stButton 컨테이너 크기 확보 */
+    div[data-testid="stHorizontalBlock"] div.stButton {
+        width: 100% !important;
         max-width: 140px !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    /* 실제 버튼 스타일 */
+    div[data-testid="stHorizontalBlock"] div.stButton > button {
         width: 100% !important;
         min-width: 100px !important;
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+        padding: 8px 12px !important;
         font-size: 14px !important;
     }
 </style>
@@ -689,12 +698,19 @@ if st.session_state.step < total_q:
 
     st.write("")
 
-    # 💡 하단 버튼 2개 (CSS로 중앙 정렬 및 간격 조절됨)
+    # 💡 [핵심 구현] 하단 이전/다음 버튼 영역
     col1, col2 = st.columns(2)
 
     with col1:
-        if current_idx > 0:
-            if st.button("⬅️ 이전 질문", use_container_width=True):
+        # 첫 번째 질문(Q1)일 때는 버튼을 비활성화(disabled) 상태로 보여주어 레이아웃 유지
+        is_disabled = current_idx == 0
+        if st.button(
+            "⬅️ 이전 질문",
+            use_container_width=True,
+            disabled=is_disabled,
+            key="prev_btn",
+        ):
+            if current_idx > 0:
                 st.session_state.step -= 1
                 st.rerun()
 
@@ -702,7 +718,7 @@ if st.session_state.step < total_q:
         btn_label = (
             "🔥 결과 확인" if current_idx == total_q - 1 else "다음 질문 ➡️"
         )
-        if st.button(btn_label, use_container_width=True):
+        if st.button(btn_label, use_container_width=True, key="next_btn"):
             st.session_state.step += 1
             st.rerun()
 
