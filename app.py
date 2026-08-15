@@ -560,7 +560,7 @@ total_q = len(questions)
 # ------------------------------------
 if st.session_state.step == -1:
     st.markdown(
-        '<div class="header-sub1">JEJU NATIONAL UNIVERSITY - GLOBAL AUTONOMY MAJOR EXPERIMENT</div>',
+        '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -591,7 +591,7 @@ if st.session_state.step == -1:
             <h2>나에게 딱 맞는 전공은 무엇일까?</h2>
             <p>간단한 20개 질문을 통해 나의 적성과 성향을 분석하고,<br>
             제주대학교의 다양한 추천 전공 트랙을 확인해 보세요!</p>
-            <p style="font-size: 13px; color: #64748B; margin-top: 12px;">⏱️ Estimated Time: about 2-3 minutes</p>
+            <p style="font-size: 13px; color: #64748B; margin-top: 12px;">⏱️ 소요 시간: 약 2~3분</p>
         </div>
         """,
         unsafe_allow_html=True,
