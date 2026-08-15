@@ -14,7 +14,7 @@ st.markdown(
     /* 상단 헤더 스타일 */
     .header-sub1 {
         font-size: 14px !important;
-        color: #a0a0a0 !important;
+        color: #9CA3AF !important;
         margin-bottom: 4px !important;
     }
     .custom-title {
@@ -26,16 +26,17 @@ st.markdown(
     }
     .header-sub2 {
         font-size: 14px !important;
-        color: #808080 !important;
+        color: #9CA3AF !important;
         margin-bottom: 4px !important;
     }
     
-    /* 질문 길이에 따라 위치가 흔들리지 않도록 고정 높이 부여 */
+    /* [수정] 다크모드/라이트모드 공통 - 질문 텍스트 색상 및 가독성 고정 */
     .question-title {
-        font-size: 18px !important;
+        font-size: 19px !important;
         font-weight: 700 !important;
         line-height: 1.4 !important;
-        color: #111827;
+        color: #FFFFFF !important; /* 항상 선명한 흰색으로 고정 */
+        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5); /* 어두운/밝은 배경 모두 가독성 확보 */
         margin-top: 12px !important;
         margin-bottom: 12px !important;
         min-height: 80px !important;
@@ -66,28 +67,28 @@ st.markdown(
         width: 100%;
     }
     .cover-img-container img {
-        width: 180px !important; /* 이미지 크기 조절 (필요 시 숫자를 변경하세요) */
+        width: 180px !important;
         height: auto !important;
         object-fit: contain;
     }
 
-    /* 시작 페이지 안내 박스 CSS */
+    /* 시작 페이지 안내 박스 CSS (다크모드 대응) */
     .start-container {
         text-align: center;
         padding: 24px 20px;
-        background-color: #F8FAFC;
+        background-color: #1E293B;
         border-radius: 12px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid #334155;
         margin-bottom: 20px;
     }
     .start-container h2 {
-        color: #1E3A8A;
+        color: #38BDF8;
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 12px;
     }
     .start-container p {
-        color: #475569;
+        color: #E2E8F0;
         font-size: 15px;
         line-height: 1.6;
         margin-bottom: 8px;
@@ -97,7 +98,7 @@ st.markdown(
     .result-sub {
         font-size: 18px !important;
         font-weight: 600 !important;
-        color: #333333;
+        color: #E2E8F0;
         margin-bottom: 4px !important;
     }
 
@@ -107,19 +108,19 @@ st.markdown(
         font-weight: 800 !important;
         margin-top: 4px !important;
         margin-bottom: 16px !important;
-        color: #1E3A8A;
+        color: #38BDF8;
     }
 
     /* 유형 설명글 스타일 */
     .result-desc-box {
         font-size: 13px !important;
         line-height: 1.5 !important;
-        background-color: #F0F9FF;
+        background-color: #0F172A;
         border-left: 4px solid #0284C7;
         padding: 12px 16px;
         border-radius: 4px;
         margin-bottom: 16px;
-        color: #0C4A6E;
+        color: #E0F2FE;
     }
 
     /* 이미지 완벽 중앙 정렬 */
@@ -470,7 +471,7 @@ questions = [
     },
 ]
 
-# 세션 상태 초기화 (step = -1 : 시작 화면)
+# 세션 상태 초기화
 if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
@@ -492,7 +493,6 @@ if st.session_state.step == -1:
     )
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
 
-    # 상단 메인 캐릭터 이미지 (180px 크기로 작게 조절하여 중앙 배치)
     cover_img_path = "main_cover.png"
     if os.path.exists(cover_img_path):
         with open(cover_img_path, "rb") as f:
@@ -509,20 +509,18 @@ if st.session_state.step == -1:
             unsafe_allow_html=True,
         )
 
-    # 질문 문구 상단 안내 박스
     st.markdown(
         """
         <div class="start-container">
             <h2>나에게 딱 맞는 전공은 무엇일까?</h2>
             <p>간단한 20개 질문을 통해 나의 적성과 성향을 분석하고,<br>
             제주대학교의 다양한 추천 전공 트랙을 확인해 보세요!</p>
-            <p style="font-size: 13px; color: #64748B; margin-top: 12px;">⏱️ Estimated Time: about 2-3 minutes</p>
+            <p style="font-size: 13px; color: #94A3B8; margin-top: 12px;">⏱️ Estimated Time: about 2-3 minutes</p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # 테스트 시작하기 버튼
     if st.button("🚀 테스트 시작하기", use_container_width=True, type="primary"):
         st.session_state.step = 0
         st.rerun()
@@ -575,7 +573,6 @@ elif st.session_state.step < total_q:
 
     st.write("")
 
-    # 하단 이전/다음 버튼 영역
     col1, col2 = st.columns(2)
 
     with col1:
@@ -652,7 +649,6 @@ else:
         unsafe_allow_html=True,
     )
 
-    # 결과 대표 사진 찾기
     possible_names = [f"{mbti}.png", f"{mbti}.PNG", f"{mbti}.jpg", f"{mbti}.JPG"]
     img_path = None
     for name in possible_names:
@@ -663,7 +659,6 @@ else:
             img_path = f"images/{name}"
             break
 
-    # 결과 이미지 출력
     if img_path:
         with open(img_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
@@ -682,7 +677,6 @@ else:
     else:
         st.warning(f"⚠️ `{mbti}.png` 이미지를 찾을 수 없습니다.")
 
-    # 추천 학과 출력
     clean_depts = [
         re.sub(
             r"^(사회과학대학|경상대학|인문대학|자연과학대학|해양과학대학|공과대학|생명자원과학대학)\s*",
@@ -725,7 +719,7 @@ else:
 
     st.markdown(
         """
-    <div style="background-color: #d1e7dd; color: #0f5132; padding: 16px; border-radius: 8px; margin: 16px 0;">
+    <div style="background-color: #064E3B; color: #D1FAE5; padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid #059669;">
         💡 <b>글로벌자율학부(자유전공)의 특별함!</b><br>
         지금 나온 결과가 마음에 들거나, 혹은 여러 학과 사이에서 고민되나요?<br>
         <b>글로벌자율학부(자유전공)</b>에 입학하면 <b>1학년 동안 이 학과들의 수업을 들어보고</b> 나에게 정말 맞는 전공을 2학년 때 자유롭게 선택할 수 있습니다!
