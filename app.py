@@ -101,49 +101,32 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🛠️ [해결] 이전/다음 버튼 중앙 정렬 및 사라짐 방지 CSS (구버전/신버전 Streamlit 모두 호환) */
+    /* 🛠️ [수정] 양 끝 변 위치를 질문 선택지 사각형과 100% 동일 선상에 맞추는 CSS */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
-        justify-content: center !important;
-        align-items: center !important;
-        gap: 12px !important;
         width: 100% !important;
+        gap: 12px !important; /* 이전/다음 버튼 사이의 여백 */
     }
     
-    /* 최신 stColumn 및 구버전 column 대응 */
+    /* 두 컬럼이 화면의 반씩(50:50) 가득 채우도록 지정 */
     div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"],
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         flex: 1 1 0px !important;
         width: 100% !important;
         min-width: 0 !important;
-        display: flex !important;
     }
 
-    /* 첫 번째 컬럼 (이전 버튼 영역) */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1),
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        justify-content: flex-end !important;
-    }
-
-    /* 두 번째 컬럼 (다음 버튼 영역) */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2),
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
-        justify-content: flex-start !important;
-    }
-
-    /* stButton 컨테이너 크기 확보 */
+    /* stButton 컨테이너 가로폭을 선택지 사각형과 일치시킴 */
     div[data-testid="stHorizontalBlock"] div.stButton {
         width: 100% !important;
-        max-width: 140px !important;
-        display: flex !important;
-        justify-content: center !important;
+        max-width: 100% !important;
     }
 
-    /* 실제 버튼 스타일 */
+    /* 실제 버튼이 컨테이너의 좌우 끝까지 가득 채워지도록 설정 */
     div[data-testid="stHorizontalBlock"] div.stButton > button {
         width: 100% !important;
-        min-width: 100px !important;
+        max-width: 100% !important;
         padding: 8px 12px !important;
         font-size: 14px !important;
     }
@@ -698,11 +681,10 @@ if st.session_state.step < total_q:
 
     st.write("")
 
-    # 💡 [핵심 구현] 하단 이전/다음 버튼 영역
+    # 하단 이전/다음 버튼 영역
     col1, col2 = st.columns(2)
 
     with col1:
-        # 첫 번째 질문(Q1)일 때는 버튼을 비활성화(disabled) 상태로 보여주어 레이아웃 유지
         is_disabled = current_idx == 0
         if st.button(
             "⬅️ 이전 질문",
