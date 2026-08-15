@@ -611,6 +611,8 @@ if "step" not in st.session_state:
     st.session_state.step = -1
 if "answers" not in st.session_state:
     st.session_state.answers = {}
+if "user_result" not in st.session_state:
+    st.session_state.user_result = None
 
 total_q = len(questions)
 
@@ -662,6 +664,7 @@ if st.session_state.step == -1:
 
     if st.button("🚀 테스트 시작하기", use_container_width=True, type="primary"):
         st.session_state.step = 0
+        st.session_state.user_result = None
         st.rerun()
 
 # ------------------------------------
@@ -757,6 +760,9 @@ elif st.session_state.step == total_q:
     mbti += "A" if scores["A"] >= scores["C"] else "C"
     mbti += "M" if scores["M"] >= scores["R"] else "R"
     mbti += "G" if scores["G"] >= scores["L"] else "L"
+
+    # 내 결과 정보 세션 저장
+    st.session_state.user_result = mbti
 
     result_data = TYPE_INFO.get(mbti, TYPE_INFO["SAMG"])
     st.balloons()
@@ -855,6 +861,7 @@ elif st.session_state.step == total_q:
         if st.button("🔄 테스트 다시 하기", use_container_width=True):
             st.session_state.step = -1
             st.session_state.answers = {}
+            st.session_state.user_result = None
             st.rerun()
     with col_res2:
         if st.button("👀 다른 유형들 모두 살펴보기", use_container_width=True):
@@ -864,29 +871,22 @@ elif st.session_state.step == total_q:
     st.markdown("---")
     st.markdown("### 🔗 제주대학교 관련 링크")
 
-    col_link1, col_link2 = st.columns(2)
-    with col_link1:
-        st.link_button(
-            "📸 2026 자유전공 인스타그램",
-            "https://www.instagram.com/jnu_start_2026?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-            use_container_width=True,
-        )
-        st.link_button(
-            "🏫 제주대학교 자유전공 홈페이지",
-            "https://openmajor.jejunu.ac.kr/free/index.htm",
-            use_container_width=True,
-        )
-    with col_link2:
-        st.link_button(
-            "🎓 제주대학교 입학처",
-            "https://ibsi.jejunu.ac.kr/main",
-            use_container_width=True,
-        )
-        st.link_button(
-            "🏛️ 제주대학교 단과대학 안내",
-            "https://www.jejunu.ac.kr/college/info",
-            use_container_width=True,
-        )
+    # 세로(1열) 정렬 및 단과대학 링크 삭제
+    st.link_button(
+        "📸 2026 자유전공 인스타그램",
+        "https://www.instagram.com/jnu_start_2026?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+        use_container_width=True,
+    )
+    st.link_button(
+        "🏫 제주대학교 자유전공 홈페이지",
+        "https://openmajor.jejunu.ac.kr/free/index.htm",
+        use_container_width=True,
+    )
+    st.link_button(
+        "🎓 제주대학교 입학처",
+        "https://ibsi.jejunu.ac.kr/main",
+        use_container_width=True,
+    )
 
 # ------------------------------------
 # 3. 모든 유형 모아보기 페이지 (step == 99)
@@ -906,10 +906,25 @@ elif st.session_state.step == 99:
     )
     st.markdown('<hr style="margin: 8px 0 16px 0;">', unsafe_allow_html=True)
 
-    if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="top_home_btn"):
-        st.session_state.step = -1
-        st.session_state.answers = {}
-        st.rerun()
+    # 상단 버튼 영역 (내 결과가 있는 경우 돌아가기 버튼 표시)
+    if st.session_state.user_result:
+        col_top1, col_top2 = st.columns(2)
+        with col_top1:
+            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="top_result_btn", type="primary"):
+                st.session_state.step = total_q
+                st.rerun()
+        with col_top2:
+            if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="top_home_btn"):
+                st.session_state.step = -1
+                st.session_state.answers = {}
+                st.session_state.user_result = None
+                st.rerun()
+    else:
+        if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="top_home_btn_single"):
+            st.session_state.step = -1
+            st.session_state.answers = {}
+            st.session_state.user_result = None
+            st.rerun()
 
     st.write("")
 
@@ -934,7 +949,22 @@ elif st.session_state.step == 99:
             st.markdown(f"- {dept}")
         st.markdown("<hr style='margin: 16px 0 24px 0; border: 0.5px solid #CBD5E1;'>", unsafe_allow_html=True)
 
-    if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="bottom_home_btn"):
-        st.session_state.step = -1
-        st.session_state.answers = {}
-        st.rerun()
+    # 하단 버튼 영역
+    if st.session_state.user_result:
+        col_bot1, col_bot2 = st.columns(2)
+        with col_bot1:
+            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="bottom_result_btn", type="primary"):
+                st.session_state.step = total_q
+                st.rerun()
+        with col_bot2:
+            if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="bottom_home_btn"):
+                st.session_state.step = -1
+                st.session_state.answers = {}
+                st.session_state.user_result = None
+                st.rerun()
+    else:
+        if st.button("🏠 처음으로 돌아가기", use_container_width=True, key="bottom_home_btn_single"):
+            st.session_state.step = -1
+            st.session_state.answers = {}
+            st.session_state.user_result = None
+            st.rerun()
