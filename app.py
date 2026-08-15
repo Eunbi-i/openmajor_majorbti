@@ -3,6 +3,7 @@ import glob
 import os
 import re
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 페이지 기본 설정
 st.set_page_config(page_title="전공탐색 MBTI", page_icon="🎓", layout="centered")
@@ -885,6 +886,16 @@ elif st.session_state.step == total_q:
 # 3. 모든 유형 모아보기 페이지 (step == 99)
 # ------------------------------------
 elif st.session_state.step == 99:
+    # 📌 페이지 최상단으로 스크롤 이동 JS 실행
+    components.html(
+        """
+        <script>
+            window.parent.scrollTo(0, 0);
+        </script>
+        """,
+        height=0,
+    )
+
     st.markdown(
         '<div class="header-sub1">제주대학교 전공체험의 날 - 글로벌자율학부 자유전공 체험</div>',
         unsafe_allow_html=True,
@@ -902,7 +913,7 @@ elif st.session_state.step == 99:
     if st.session_state.user_result:
         col_top1, col_top2 = st.columns(2)
         with col_top1:
-            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="top_result_btn", type="primary"):
+            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="top_result_btn"):
                 st.session_state.step = total_q
                 st.rerun()
         with col_top2:
@@ -943,7 +954,7 @@ elif st.session_state.step == 99:
     if st.session_state.user_result:
         col_bot1, col_bot2 = st.columns(2)
         with col_bot1:
-            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="bottom_result_btn", type="primary"):
+            if st.button("🔙 내 결과로 돌아가기", use_container_width=True, key="bottom_result_btn"):
                 st.session_state.step = total_q
                 st.rerun()
         with col_bot2:
