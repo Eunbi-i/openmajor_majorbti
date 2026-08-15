@@ -7,11 +7,11 @@ import streamlit as st
 # 페이지 기본 설정
 st.set_page_config(page_title="전공탐색 MBTI", page_icon="🎓", layout="centered")
 
-# 🎨 디자인 커스텀 CSS (배경 및 텍스트 라이트 모드 고정)
+# 🎨 디자인 커스텀 CSS (버튼 스타일 완전 고정)
 st.markdown(
     """
 <style>
-    /* 전체 앱 배경을 강제로 흰색/밝은 톤으로 고정 */
+    /* 전체 앱 배경을 흰색으로 고정 */
     .stApp {
         background-color: #FFFFFF !important;
         color: #1E293B !important;
@@ -37,7 +37,7 @@ st.markdown(
         margin-bottom: 4px !important;
     }
     
-    /* 질문 텍스트 스타일 - 어두운 검은색 계열로 완전 고정 */
+    /* 질문 텍스트 스타일 */
     .question-title {
         font-size: 19px !important;
         font-weight: 700 !important;
@@ -57,8 +57,17 @@ st.markdown(
         color: #1E293B !important;
     }
 
-    /* 선지 및 메인 버튼 스타일 */
-    div[data-testid="stMainBlockContainer"] div.stButton > button {
+    /* ---------------------------------------------------- */
+    /* 🔘 버튼 스타일 완전 고정 (다크모드 영향 차단) */
+    /* ---------------------------------------------------- */
+
+    /* 1. 일반 선택지 및 기본 버튼 (Secondary) */
+    div.stButton > button[kind="secondary"],
+    div.stButton > button:not([kind="primary"]) {
+        background-color: #F1F5F9 !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
         min-height: 56px !important;
         display: flex !important;
         align-items: center !important;
@@ -68,7 +77,60 @@ st.markdown(
         word-break: keep-all !important;
         line-height: 1.4 !important;
         padding: 12px 16px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease;
     }
+
+    /* 일반 버튼 Hover / Focus / Active */
+    div.stButton > button[kind="secondary"]:hover,
+    div.stButton > button[kind="secondary"]:focus,
+    div.stButton > button[kind="secondary"]:active,
+    div.stButton > button:not([kind="primary"]):hover,
+    div.stButton > button:not([kind="primary"]):focus,
+    div.stButton > button:not([kind="primary"]):active {
+        background-color: #E2E8F0 !important;
+        color: #0F172A !important;
+        border-color: #94A3B8 !important;
+        box-shadow: none !important;
+    }
+
+    /* 2. 선택된 버튼 및 강조 버튼 (Primary) */
+    div.stButton > button[kind="primary"] {
+        background-color: #FF4B4B !important;
+        color: #FFFFFF !important;
+        border: 1px solid #FF4B4B !important;
+        border-radius: 8px !important;
+        min-height: 56px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        white-space: normal !important;
+        word-break: keep-all !important;
+        line-height: 1.4 !important;
+        padding: 12px 16px !important;
+        font-weight: 700 !important;
+        transition: all 0.2s ease;
+    }
+
+    /* 강조 버튼 Hover / Focus / Active */
+    div.stButton > button[kind="primary"]:hover,
+    div.stButton > button[kind="primary"]:focus,
+    div.stButton > button[kind="primary"]:active {
+        background-color: #E03E3E !important;
+        color: #FFFFFF !important;
+        border-color: #E03E3E !important;
+        box-shadow: none !important;
+    }
+
+    /* 비활성화된 버튼 스타일 (이전 질문 버튼 첫 문항일 때) */
+    div.stButton > button:disabled {
+        background-color: #F8FAFC !important;
+        color: #94A3B8 !important;
+        border-color: #E2E8F0 !important;
+    }
+
+    /* ---------------------------------------------------- */
 
     /* 시작 페이지 메인 캐릭터 이미지 크기 조절 (중앙 정렬) */
     .cover-img-container {
@@ -85,7 +147,7 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* 시작 페이지 안내 박스 CSS (밝은 박스/검은 글씨) */
+    /* 시작 페이지 안내 박스 CSS */
     .start-container {
         text-align: center;
         padding: 24px 20px;
