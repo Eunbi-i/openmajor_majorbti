@@ -107,7 +107,7 @@ st.markdown(
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         /* 👇 [핵심 조절 포인트 1] 이전/다음 버튼 사이 간격을 px 단위로 직접 지정하세요 (예: 8px, 16px, 24px 등) */
-        gap: 16px !important; 
+        gap: 8px !important; 
         width: 100% !important;
         /* 👇 [핵심 조절 포인트 2] 
            - 'center': 두 버튼을 가운데로 정렬하여 좁게 모음
